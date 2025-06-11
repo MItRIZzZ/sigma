@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Football Player Grader</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+<style>
+  :root {
+    --color-bg: #ffffff;
+    --color-primary: #2563eb;
+    --color-primary-light: #3b82f6;
+    --color-primary-dark: #1e40af;
+    --color-text-primary: #111827;
+    --color-text-secondary: #6b7280;
+    --color-card-bg: #f9fafb;
+    --color-shadow: rgba(0,0,0,0.1);
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 32px;
+    --border-radius: 12px;
+    --font-family: 'Inter', sans-serif;
+    --transition-speed: 0.3s;
+    --danger-color: #dc2626;
+    --success-color: #16a34a;
+    --warning-color: #f59e0b;
+    --info-color: #3b82f6;
+    --threat-god: #facc15; /* gold */
+    --threat-dragon: #ef4444; /* red */
+    --threat-demon: #c026d3; /* purple */
+    --threat-tiger: #f97316; /* orange */
+    --threat-wolf: #6b7280; /* gray */
+  }
+  /* Resets */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin:0;
+    font-family: var(--font-family);
+    background: var(--color-bg);
+    color: var(--color-text-primary);
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  a {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color var(--transition-speed);
+  }
+  a:hover, a:focus {
+    color: var(--color-primary-dark);
+  }
+  h1,h2,h3,h4,h5,h6 {
+    margin-top:0;
+    margin-bottom: var(--spacing-md);
+  }
+  h1 {
+    font-weight: 800;
+    font-size: 2.5rem;
+    letter-spacing: -0.02em;
+  }
+  h2 {
+    font-weight: 700;
+    font-size: 2rem;
+  }
+  h3 {
+    font-weight: 600;
+    font-size: 1.25rem;
+  }
+  p {
+    margin-bottom: var(--spacing-md);
+    color: var(--color-text-secondary);
+  }
+  button {
+    cursor: pointer;
+    font-family: inherit;
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 0.6em 1.2em;
+    font-weight: 600;
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+  }
+  button.primary {
+    background-color: var(--color-primary);
+    color: white;
+  }
+  button.primary:hover, button.primary:focus {
+    background-color: var(--color-primary-dark);
+  }
+  button.secondary {
+    background-color: var(--color-primary-light);
+    color: white;
+  }
+  button.secondary:hover, button.secondary:focus {
+    background-color: var(--color-primary);
+  }
+  button.danger {
+    background-color: var(--danger-color);
+    color: white;
+  }
+  button.danger:hover, button.danger:focus {
+    background-color: #b91c1c;
+  }
+  input, select, textarea {
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 0.5em 0.75em;
+    border: 1.5px solid #d1d5db;
+    border-radius: var(--border-radius);
+    width: 100%;
+    transition: border-color var(--transition-speed);
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--color-primary);
+    outline: none;
+  }
+  label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.3em;
+    color: var(--color-text-primary);
+  }
+
+  /* Layout */
+  #app {
+    max-width: 1200px;
+    margin: 0 auto;
+    flex-grow: 1;
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    position: sticky;
+    top: 0;
+    background: var(--color-bg);
+    border-bottom: 1px solid #e5e7eb;
+    z-index: 1000;
+    padding: 16px var(--spacing-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px var(--color-shadow);
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+  }
+  .logo {
+    font-weight: 800;
+    font-size: 1.75rem;
+    color: var(--color-primary);
+    user-select: none;
+  }
+  nav {
+    display: flex;
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  nav button {
+    all: unset;
+    cursor: pointer;
+    color: var(--color-primary);
+    font-weight: 600;
+    font-size: 1rem;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius);
+    transition: background-color var(--transition-speed);
+    user-select: none;
+  }
+  nav button.active,
+  nav button:hover,
+  nav button:focus {
+    background-color: var(--color-primary);
+    color: white;
+  }
+
+  main {
+    margin-top: var(--spacing-lg);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Player grid */
+  #playersView {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(320px,1fr));
+    gap: var(--spacing-lg);
+  }
+  .player-card {
+    background: var(--color-card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 8px var(--color-shadow);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .player-image-container {
+    width: 100%;
+    background: #d1d5db;
+    aspect-ratio: 4 / 3;
+    position: relative;
+  }
+  .player-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .player-image-upload {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 50%;
+    padding: 6px;
+    cursor: pointer;
+    color: white;
+  }
+  .player-content {
+    padding: var(--spacing-md);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .player-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .player-name {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--color-text-primary);
+  }
+  .player-grade {
+    color: var(--color-primary);
+    font-weight: 800;
+    font-size: 1.5rem;
+    user-select: none;
+  }
+  .player-skill-list,
+  .player-stat-list {
+    margin-top: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+  }
+  .skill-group, .stat-group {
+    margin-bottom: var(--spacing-sm);
+  }
+  .skill-group strong, .stat-group strong {
+    color: var(--color-text-primary);
+  }
+  .skills-inline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    color: var(--color-text-secondary);
+  }
+  .skills-inline span {
+    background: var(--color-primary-light);
+    color: white;
+    padding: 3px 10px;
+    border-radius: 16px;
+    font-size: 0.9rem;
+    user-select: none;
+  }
+  .player-footer {
+    margin-top: auto;
+  }
+  .threat-level {
+    display: inline-flex;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1rem;
+    border-radius: 16px;
+    padding: 4px 12px;
+    color: white;
+    user-select: none;
+    gap: 6px;
+  }
+  .threat-god {
+    background-color: var(--threat-god);
+    color: #333;
+  }
+  .threat-dragon {
+    background-color: var(--threat-dragon);
+  }
+  .threat-demon {
+    background-color: var(--threat-demon);
+  }
+  .threat-tiger {
+    background-color: var(--threat-tiger);
+    color: #333;
+  }
+  .threat-wolf {
+    background-color: var(--threat-wolf);
+  }
+
+  /* Comments section */
+  .comments {
+    margin-top: var(--spacing-md);
+  }
+  .comments h4 {
+    margin-bottom: var(--spacing-sm);
+  }
+  .comment {
+    background: #fff;
+    border-radius: var(--border-radius);
+    padding: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    position: relative;
+  }
+  .comment-text {
+    flex-grow: 1;
+    white-space: pre-wrap;
+    color: var(--color-text-primary);
+    outline: none;
+  }
+  .comment-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .comment-actions button {
+    background: transparent;
+    color: var(--color-primary);
+    font-size: 1.2rem;
+    line-height: 1;
+    padding: 2px;
+    user-select: none;
+  }
+  .comment-actions button:hover, .comment-actions button:focus {
+    color: var(--color-primary-dark);
+  }
+  .comment-form {
+    display: flex;
+    margin-top: var(--spacing-sm);
+    gap: 8px;
+  }
+  .comment-form textarea {
+    flex-grow: 1;
+    resize: vertical;
+    min-height: 60px;
+    font-size: 1rem;
+  }
+  .comment-form button {
+    align-self: flex-end;
+    padding: 0.6em 1em;
+  }
+
+  /* Forms and modal styles */
+  #modal, #confirmModal {
+    position: fixed;
+    top:0; left:0; right:0; bottom:0;
+    background: rgba(0,0,0,0.2);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1500;
+  }
+  #modal.active, #confirmModal.active {
+    display: flex;
+  }
+  .modal-content {
+    background: var(--color-bg);
+    border-radius: var(--border-radius);
+    max-width: 600px;
+    width: 90%;
+    padding: var(--spacing-lg);
+    box-shadow: 0 8px 24px var(--color-shadow);
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+  }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+  }
+  .modal-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+  .modal-close {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+  }
+  .modal-close:hover, .modal-close:focus {
+    color: var(--color-primary);
+  }
+  form label {
+    margin-top: var(--spacing-md);
+  }
+  form button[type="submit"] {
+    margin-top: var(--spacing-lg);
+  }
+  form input[type="number"]::-webkit-inner-spin-button, form input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Blog Section */
+  #blogsView {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+  .blog-card {
+    background: var(--color-card-bg);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    box-shadow: 0 4px 8px var(--color-shadow);
+    display: flex;
+    flex-direction: column;
+  }
+  .blog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .blog-title {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--color-text-primary);
+    outline: none;
+  }
+  .blog-content {
+    margin-top: var(--spacing-md);
+    color: var(--color-text-secondary);
+    white-space: pre-wrap;
+    outline: none;
+  }
+  .blog-actions {
+    margin-top: var(--spacing-md);
+    display: flex;
+    gap: var(--spacing-sm);
+  }
+  .blog-actions button {
+    background-color: var(--color-primary);
+    color: white;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .blog-actions button:hover {
+    background-color: var(--color-primary-dark);
+  }
+
+  /* Picture Manager */
+  #picturesView {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+  .picture-uploader {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    align-items: center;
+  }
+  .picture-uploader input[type="file"] {
+    flex-grow: 1;
+  }
+  .pictures-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(120px,1fr));
+    gap: var(--spacing-md);
+  }
+  .picture-item {
+    position: relative;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: 0 4px 8px var(--color-shadow);
+    cursor: pointer;
+  }
+  .picture-item img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    display: block;
+    border-radius: var(--border-radius);
+    user-select: none;
+  }
+  .picture-delete {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background-color: rgba(220,38,38,0.85);
+    border-radius: 50%;
+    padding: 6px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    line-height: 1;
+    border: none;
+  }
+  .picture-delete:hover,
+  .picture-delete:focus {
+    background-color: rgba(220,38,38,1);
+  }
+
+  /* Editable text highlight */
+  [contenteditable]:focus {
+    outline: 2px solid var(--color-primary);
+    background-color: #eff6ff;
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    #app {
+      padding: var(--spacing-md);
+    }
+    header {
+      flex-direction: column;
+      gap: var(--spacing-md);
+      align-items: flex-start;
+    }
+    nav {
+      justify-content: flex-start;
+      gap: var(--spacing-md);
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    #playersView {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo" tabindex="0" aria-label="Football Player Grader Home">Football Grader</div>
+  <nav role="navigation" aria-label="Main Navigation">
+    <button aria-controls="playersView" aria-selected="true" role="tab" id="tabPlayers" class="active">Players</button>
+    <button aria-controls="blogsView" aria-selected="false" role="tab" id="tabBlogs">Blogs</button>
+    <button aria-controls="picturesView" aria-selected="false" role="tab" id="tabPictures">Pictures</button>
+    <button id="btnAddPlayer" title="Add New Player" aria-label="Add New Player" class="primary" style="margin-left: auto;">+ Add Player</button>
+    <button id="ownerToggleBtn" aria-label="Owner Login" title="Owner Login" class="secondary">Owner Login</button>
+  </nav>
+</header>
+<main id="app" role="main">
+  <!-- Players View -->
+  <section id="playersView" role="tabpanel" aria-labelledby="tabPlayers">
+  </section>
+
+  <!-- Blogs View -->
+  <section id="blogsView" role="tabpanel" aria-labelledby="tabBlogs" hidden>
+    <button id="btnAddBlog" class="primary" style="margin-bottom: var(--spacing-md); max-width: 180px;">+ Add New Blog</button>
+  </section>
+
+  <!-- Pictures View -->
+  <section id="picturesView" role="tabpanel" aria-labelledby="tabPictures" hidden>
+    <div class="picture-uploader" id="pictureUploader">
+      <input type="file" id="pictureFileInput" accept="image/*" aria-label="Upload Pictures" multiple />
+      <button id="btnUploadPictures" class="primary">Upload</button>
+    </div>
+    <div class="pictures-grid" aria-live="polite" aria-relevant="additions removals" aria-atomic="true">
+    </div>
+  </section>
+</main>
+
+<!-- Modal for adding/editing player -->
+<div id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="modalTitle">Add New Player</h2>
+      <button class="modal-close" aria-label="Close Modal">&times;</button>
+    </div>
+    <form id="playerForm" novalidate>
+      <label for="playerNameInput">Name</label>
+      <input type="text" id="playerNameInput" required aria-required="true" minlength="2" maxlength="50" />
+      
+      <label for="playerGradeInput">Grade (S, A, B, C, D)</label>
+      <select id="playerGradeInput" required aria-required="true">
+        <option value="">Select Grade</option>
+        <option value="S">S</option>
+        <option value="A">A</option>
+        <option value="B">B</option>
+        <option value="C">C</option>
+        <option value="D">D</option>
+      </select>
+
+      <fieldset style="margin-top: var(--spacing-md); border:none; padding:0;">
+        <legend><strong>Skills</strong> (comma separated)</legend>
+        <label for="skill1Input">Main Skills</label>
+        <input type="text" id="skill1Input" placeholder="flick up, rainbow flick" aria-describedby="skill1Desc" />
+        <div id="skill1Desc" class="sr-only">Enter main skills separated by commas</div>
+
+        <label for="skill2Input">Shooting Skills</label>
+        <input type="text" id="skill2Input" placeholder="trivela, rabona, kaiser impact" aria-describedby="skill2Desc" />
+        <div id="skill2Desc" class="sr-only">Enter shooting skills separated by commas</div>
+      </fieldset>
+
+      <fieldset style="margin-top: var(--spacing-md); border:none; padding:0;">
+        <legend><strong>Stats</strong></legend>
+        <label for="statAgility">Agility (0-100)</label>
+        <input type="number" id="statAgility" min="0" max="100" step="1" required />
+        <label for="statDefence">Defence (0-100)</label>
+        <input type="number" id="statDefence" min="0" max="100" step="1" required />
+        <label for="statSanity">Sanity (0-100)</label>
+        <input type="number" id="statSanity" min="0" max="100" step="1" required />
+        <label for="statDurability">Durability (0-100)</label>
+        <input type="number" id="statDurability" min="0" max="100" step="0.1" required />
+        <label for="statMaxSpeed">Max Speed (km/h)</label>
+        <input type="number" id="statMaxSpeed" min="0" max="50" step="0.1" required />
+        <label for="statFootballIQ">Football IQ</label>
+        <input type="number" id="statFootballIQ" min="0" max="200" step="1" required />
+      </fieldset>
+
+      <label for="playerBestOnInput">Best On (e.g. futsal)</label>
+      <input type="text" id="playerBestOnInput" maxlength="50" required />
+
+      <label for="playerThreatInput">Threat Level</label>
+      <select id="playerThreatInput" required>
+        <option value="">Select Threat Level</option>
+        <option value="god">God</option>
+        <option value="dragon">Dragon</option>
+        <option value="demon">Demon</option>
+        <option value="tiger">Tiger</option>
+        <option value="wolf">Wolf</option>
+      </select>
+
+      <label for="playerImageInput">Player Image</label>
+      <input type="file" id="playerImageInput" accept="image/*" />
+
+      <div style="margin-top: var(--spacing-lg); display: flex; justify-content: flex-end; gap: var(--spacing-md);">
+        <button type="button" id="btnCancel" class="secondary">Cancel</button>
+        <button type="submit" class="primary">Save Player</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal for adding/editing blog -->
+<div id="blogModal" role="dialog" aria-modal="true" aria-labelledby="blogModalTitle" tabindex="-1" style="display:none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="blogModalTitle">Add New Blog</h2>
+      <button class="modal-close" aria-label="Close Blog Modal">&times;</button>
+    </div>
+    <form id="blogForm" novalidate>
+      <label for="blogTitleInput">Title</label>
+      <input type="text" id="blogTitleInput" required minlength="2" maxlength="100" />
+
+      <label for="blogContentInput">Content</label>
+      <textarea id="blogContentInput" rows="6" required></textarea>
+
+      <div style="margin-top: var(--spacing-lg); display: flex; justify-content: flex-end; gap: var(--spacing-md);">
+        <button type="button" id="btnBlogCancel" class="secondary">Cancel</button>
+        <button type="submit" class="primary">Save Blog</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Confirmation modal for delete actions -->
+<div id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle" tabindex="-1">
+  <div class="modal-content" style="max-width: 400px;">
+    <div class="modal-header">
+      <h2 id="confirmModalTitle">Confirm Deletion</h2>
+      <button class="modal-close" aria-label="Close Confirm Modal">&times;</button>
+    </div>
+    <p id="confirmModalMessage">Are you sure you want to delete this item?</p>
+    <div style="margin-top: var(--spacing-lg); display: flex; justify-content: flex-end; gap: var(--spacing-md);">
+      <button id="confirmCancelBtn" class="secondary">Cancel</button>
+      <button id="confirmOkBtn" class="primary">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Data Storage Keys
+  const STORAGE_KEYS = {
+    PLAYERS: 'footballGraderPlayers',
+    BLOGS: 'footballGraderBlogs',
+    PICTURES: 'footballGraderPictures',
+    OWNER_MODE: 'footballGraderOwnerMode'
+  };
+
+  // Elements
+  const tabs = {
+    players: document.getElementById('tabPlayers'),
+    blogs: document.getElementById('tabBlogs'),
+    pictures: document.getElementById('tabPictures')
+  };
+  const views = {
+    players: document.getElementById('playersView'),
+    blogs: document.getElementById('blogsView'),
+    pictures: document.getElementById('picturesView')
+  };
+  const addPlayerBtn = document.getElementById('btnAddPlayer');
+  const modal = document.getElementById('modal');
+  const modalCloseBtn = modal.querySelector('.modal-close');
+  const playerForm = document.getElementById('playerForm');
+  const playerImageInput = document.getElementById('playerImageInput');
+
+  // Blog modal elements
+  const blogModal = document.getElementById('blogModal');
+  const blogModalCloseBtn = blogModal.querySelector('.modal-close');
+  const blogForm = document.getElementById('blogForm');
+  const btnAddBlog = document.getElementById('btnAddBlog');
+
+  // Confirmation modal elements
+  const confirmModal = document.getElementById('confirmModal');
+  const confirmModalCloseBtn = confirmModal.querySelector('.modal-close');
+  const confirmCancelBtn = document.getElementById('confirmCancelBtn');
+  const confirmOkBtn = document.getElementById('confirmOkBtn');
+  const confirmMessage = document.getElementById('confirmModalMessage');
+
+  // Pictures view elements
+  const pictureFileInput = document.getElementById('pictureFileInput');
+  const btnUploadPictures = document.getElementById('btnUploadPictures');
+  const picturesGrid = views.pictures.querySelector('.pictures-grid');
+  const pictureUploaderDiv = document.getElementById('pictureUploader');
+
+  const ownerToggleBtn = document.getElementById('ownerToggleBtn');
+
+  // Current State
+  let currentView = 'players'; // default
+  let editingPlayerId = null;
+  let editingBlogId = null;
+  let ownerMode = false;
+  // To track delete confirm context
+  let deleteContext = null;
+
+  // Password for owner mode - keep this secret, not secure for production
+  const OWNER_PASSWORD = 'admin123';
+
+  // Initialize app data
+  let players = [];
+  let blogs = [];
+  let pictures = []; // Array of {id, dataUrl}
+
+  // Utility - generate ID
+  function generateId() {
+    return '_' + Math.random().toString(36).substr(2,9);
+  }
+
+  // Save/load from localStorage
+  function saveData() {
+    localStorage.setItem(STORAGE_KEYS.PLAYERS, JSON.stringify(players));
+    localStorage.setItem(STORAGE_KEYS.BLOGS, JSON.stringify(blogs));
+    localStorage.setItem(STORAGE_KEYS.PICTURES, JSON.stringify(pictures));
+  }
+  function loadData() {
+    const p = localStorage.getItem(STORAGE_KEYS.PLAYERS);
+    const b = localStorage.getItem(STORAGE_KEYS.BLOGS);
+    const pic = localStorage.getItem(STORAGE_KEYS.PICTURES);
+    players = p ? JSON.parse(p) : [];
+    blogs = b ? JSON.parse(b) : [];
+    pictures = pic ? JSON.parse(pic) : [];
+    const storedOwner = localStorage.getItem(STORAGE_KEYS.OWNER_MODE);
+    ownerMode = storedOwner === 'true';
+  }
+
+  // Set owner mode and update UI accordingly
+  function setOwnerMode(enabled) {
+    ownerMode = enabled;
+    localStorage.setItem(STORAGE_KEYS.OWNER_MODE, String(ownerMode));
+    updateOwnerModeUI();
+  }
+
+  // Update UI depending on ownerMode state
+  function updateOwnerModeUI() {
+    // Show/hide add player button
+    addPlayerBtn.style.display = ownerMode ? 'inline-block' : 'none';
+
+    // Show/hide picture uploader
+    pictureUploaderDiv.style.display = ownerMode ? 'flex' : 'none';
+
+    // Update player cards: show or hide edit / delete / change image buttons
+    document.querySelectorAll('.player-card').forEach(card => {
+      const editBtn = card.querySelector('.btn-edit-player');
+      const delBtn = card.querySelector('.btn-delete-player');
+      const imgUploadBtn = card.querySelector('.player-image-upload');
+      if(editBtn) editBtn.style.display = ownerMode ? 'inline-block' : 'none';
+      if(delBtn) delBtn.style.display = ownerMode ? 'inline-block' : 'none';
+      if(imgUploadBtn) imgUploadBtn.style.display = ownerMode ? 'inline-block' : 'none';
+    });
+
+    // Update owner toggle button text
+    ownerToggleBtn.textContent = ownerMode ? 'Logout Owner' : 'Owner Login';
+  }
+
+  // Render functions
+
+  // Map threat to class and icon text
+  const threatLevels = {
+    god: { className: 'threat-god', display: 'God', icon: 'emoji_events' },
+    dragon: { className: 'threat-dragon', display: 'Dragon', icon: 'whatshot' },
+    demon: { className: 'threat-demon', display: 'Demon', icon: 'fire_extinguisher' },
+    tiger: { className: 'threat-tiger', display: 'Tiger', icon: 'pets' },
+    wolf: { className: 'threat-wolf', display: 'Wolf', icon: 'security' }
+  };
+
+  function createSkillSpans(skills) {
+    if (!skills || skills.length === 0) return '';
+    return skills.map(s => `<span>${escapeHTML(s.trim())}</span>`).join('');
+  }
+
+  // Escape HTML helper for security
+  function escapeHTML (text) {
+    const div = document.createElement('div');
+    div.innerText = text;
+    return div.innerHTML;
+  }
+
+  // Render single player card
+  function renderPlayer(player) {
+    const threat = threatLevels[player.threatLevel] || { className: 'threat-wolf', display: 'Unknown', icon: 'help_outline' };
+    // Skills split
+    const mainSkills = player.skillsMain || [];
+    const shootingSkills = player.skillsShooting || [];
+
+    // Conditionally show owner-only controls
+    const ownerControls = ownerMode ? `
+      <button type="button" class="secondary btn-edit-player" data-player-id="${player.id}" aria-label="Edit player ${escapeHTML(player.name)}">Edit</button>
+      <button type="button" class="danger btn-delete-player" data-player-id="${player.id}" aria-label="Delete player ${escapeHTML(player.name)}" style="background-color: var(--danger-color); color: white;">Delete</button>
+    ` : '';
+
+    const imgUploadBtn = ownerMode ? `
+      <button class="player-image-upload" aria-label="Change player image" title="Change Player Image" data-player-id="${player.id}" type="button" tabindex="0">
+        <span class="material-icons" aria-hidden="true">photo_camera</span>
+      </button>
+    ` : '';
+
+    return `
+      <article class="player-card" tabindex="0" aria-label="Player ${escapeHTML(player.name)}, grade ${player.grade}, threat level ${threat.display}">
+        <div class="player-image-container">
+          <img src="${player.imageDataURL || 'https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/1439308b-1976-49cc-a9a5-8a4d193d0710.png'}" alt="Picture of player ${escapeHTML(player.name)}" />
+          ${imgUploadBtn}
+        </div>
+        <div class="player-content">
+          <header class="player-header">
+            <h3 class="player-name">${escapeHTML(player.name)}</h3>
+            <div class="player-grade" aria-label="Grade">${escapeHTML(player.grade)}</div>
+          </header>
+          <section class="player-skill-list" aria-label="Skills">
+            <div class="skill-group"><strong>Skills:</strong> <span class="skills-inline">${createSkillSpans(mainSkills)}</span></div>
+            <div class="skill-group"><strong>Shooting Skills:</strong> <span class="skills-inline">${createSkillSpans(shootingSkills)}</span></div>
+          </section>
+          <section class="player-stat-list" aria-label="Statistics">
+            <div class="stat-group">Agility: <strong>${player.agility}</strong></div>
+            <div class="stat-group">Defence: <strong>${player.defence}</strong></div>
+            <div class="stat-group">Sanity: <strong>${player.sanity}</strong></div>
+            <div class="stat-group">Durability: <strong>${player.durability.toFixed(1)}</strong></div>
+            <div class="stat-group">Max Speed: <strong>${player.maxSpeed.toFixed(1)} km/h</strong></div>
+            <div class="stat-group">Football IQ: <strong>${player.footballIQ}</strong></div>
+            <div class="stat-group">Best On: <strong>${escapeHTML(player.bestOn)}</strong></div>
+          </section>
+          <div class="player-footer">
+            <div class="threat-level ${threat.className}" aria-label="Threat level ${threat.display}">
+              <span class="material-icons" aria-hidden="true" style="font-size: 1.2rem;">${threat.icon}</span> ${threat.display}
+            </div>
+          </div>
+          <hr style="margin: var(--spacing-md) 0;" />
+          <section class="comments" aria-label="Comments for ${escapeHTML(player.name)}">
+            <h4>Comments</h4>
+            <ul class="comment-list" data-player-id="${player.id}" style="list-style:none; padding:0;">
+              <!-- commenter will be rendered dynamically -->
+            </ul>
+            <form class="comment-form" data-player-id="${player.id}" aria-label="Add a comment for ${escapeHTML(player.name)}">
+              <textarea rows="2" aria-label="Add a comment text" required placeholder="Add a comment..."></textarea>
+              <button type="submit" class="primary">Add</button>
+            </form>
+          </section>
+          <div style="margin-top: var(--spacing-md); display: flex; justify-content: flex-end; gap: var(--spacing-sm);">
+            ${ownerControls}
+          </div>
+        </div>
+      </article>
+    `;
+  }
+
+  // Render comment
+  function createCommentElement(comment, playerId) {
+    const el = document.createElement('li');
+    el.className = 'comment';
+    el.setAttribute('tabindex','0');
+    el.setAttribute('aria-label', `Comment: ${comment.text}`);
+    el.dataset.commentId = comment.id;
+    el.dataset.playerId = playerId;
+    el.innerHTML = `
+      <div class="comment-text" contenteditable="true" aria-describedby="editHint" role="textbox" aria-multiline="true">${escapeHTML(comment.text)}</div>
+      <div class="comment-actions">
+        <button class="btn-save-comment" title="Save Comment Edit" aria-label="Save edited comment for player">save</button>
+        <button class="btn-delete-comment" title="Delete Comment" aria-label="Delete comment for player">delete</button>
+      </div>
+    `;
+    return el;
+  }
+
+  // Render all comments for a player on given container ul
+  function renderComments(playerId, containerUL) {
+    const player = players.find(p => p.id === playerId);
+    if (!player) return;
+    containerUL.innerHTML = '';
+    if (!player.comments) player.comments = [];
+    player.comments.forEach(comment => {
+      const commentEl = createCommentElement(comment, playerId);
+      containerUL.appendChild(commentEl);
+    });
+  }
+
+  // Render all players to playersView
+  function renderPlayers() {
+    views.players.innerHTML = players.map(renderPlayer).join('');
+    // After render, render comments for each player
+    document.querySelectorAll('.comment-list').forEach(ul => {
+      const pid = ul.dataset.playerId;
+      renderComments(pid, ul);
+    });
+  }
+
+  // Render blog cards
+  function renderBlogs() {
+    const container = views.blogs;
+    const blogsHTML = blogs.map(blog => `
+      <article class="blog-card" tabindex="0" aria-label="Blog titled ${escapeHTML(blog.title)}">
+        <header class="blog-header">
+          <h3 class="blog-title" contenteditable="true" aria-label="Edit blog title" data-blog-id="${blog.id}" role="textbox">${escapeHTML(blog.title)}</h3>
+          <div>
+            <button class="btn-edit-blog" data-blog-id="${blog.id}" aria-label="Edit blog content">edit</button>
+            <button class="btn-delete-blog" data-blog-id="${blog.id}" aria-label="Delete blog">delete</button>
+          </div>
+        </header>
+        <section class="blog-content" contenteditable="true" role="textbox" aria-label="Edit blog content" data-blog-id="${blog.id}">${escapeHTML(blog.content)}</section>
+      </article>
+    `).join('');
+    container.querySelectorAll('.blog-card').forEach(card => card.remove());
+    // Insert before the add blog button
+    const addBlogBtn = document.getElementById('btnAddBlog');
+    if(addBlogBtn) {
+      container.insertAdjacentHTML('beforeend', blogsHTML);
+    }
+  }
+
+  // Render pictures
+  function renderPictures(){
+    picturesGrid.innerHTML = pictures.map(pic => `
+      <div class="picture-item" tabindex="0" aria-label="Picture uploaded">
+        <img src="${pic.dataUrl}" alt="Uploaded picture" />
+        ${ownerMode ? `<button class="picture-delete" title="Delete Picture" aria-label="Delete picture" data-id="${pic.id}">&times;</button>` : ''}
+      </div>
+    `).join('');
+  }
+
+  // Switch tab/views
+  function switchView(newView) {
+    if (newView === currentView) return;
+
+    // Update buttons aria-selected and active styles
+    Object.entries(tabs).forEach(([key, btn]) => {
+      if (key === newView) {
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+        views[key].removeAttribute('hidden');
+      } else {
+        btn.classList.remove('active');
+        btn.setAttribute('aria-selected', 'false');
+        views[key].setAttribute('hidden', '');
+      }
+    });
+    // Show/hide add player/blog button in header
+    if (newView === 'players') {
+      addPlayerBtn.style.display = ownerMode ? 'inline-block' : 'none';
+      btnAddBlog.style.display = 'none';
+    } else if (newView === 'blogs') {
+      addPlayerBtn.style.display = 'none';
+      btnAddBlog.style.display = 'inline-block';
+    } else {
+      addPlayerBtn.style.display = 'none';
+      btnAddBlog.style.display = 'none';
+    }
+    currentView = newView;
+    // Focus new tab for accessibility
+    tabs[newView].focus();
+  }
+
+  // Modal open/close functions
+  function openModal(modalEl) {
+    modalEl.classList.add('active');
+    modalEl.style.display = 'flex';
+    modalEl.setAttribute('aria-hidden', 'false');
+    // reset player image input to empty whenever modal opens
+    if(modalEl === modal){
+      playerImageInput.value = '';
+    }
+    // Focus first input
+    const firstInput = modalEl.querySelector('input, select, textarea, button');
+    if(firstInput) firstInput.focus();
+  }
+  function closeModal(modalEl) {
+    modalEl.classList.remove('active');
+    modalEl.style.display = 'none';
+    modalEl.setAttribute('aria-hidden', 'true');
+    if(modalEl === modal){
+      clearPlayerForm();
+    }
+  }
+
+  // Clear player form inputs
+  function clearPlayerForm() {
+    playerForm.reset();
+    editingPlayerId = null;
+    document.getElementById('modalTitle').textContent = 'Add New Player';
+  }
+
+  // Fill player form for editing
+  function fillPlayerForm(player) {
+    document.getElementById('modalTitle').textContent = 'Edit Player';
+    document.getElementById('playerNameInput').value = player.name;
+    document.getElementById('playerGradeInput').value = player.grade;
+    document.getElementById('skill1Input').value = player.skillsMain.join(', ');
+    document.getElementById('skill2Input').value = player.skillsShooting.join(', ');
+    document.getElementById('statAgility').value = player.agility;
+    document.getElementById('statDefence').value = player.defence;
+    document.getElementById('statSanity').value = player.sanity;
+    document.getElementById('statDurability').value = player.durability;
+    document.getElementById('statMaxSpeed').value = player.maxSpeed;
+    document.getElementById('statFootballIQ').value = player.footballIQ;
+    document.getElementById('playerBestOnInput').value = player.bestOn;
+    document.getElementById('playerThreatInput').value = player.threatLevel;
+    editingPlayerId = player.id;
+  }
+
+  // Handle adding/editing player
+  playerForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    if(!ownerMode){
+      alert('Only the owner can edit players.');
+      return;
+    }
+    // Collect form data
+    const name = playerForm.playerNameInput.value.trim();
+    const grade = playerForm.playerGradeInput.value;
+    const skillsMain = playerForm.skill1Input.value.split(',').map(s => s.trim()).filter(Boolean);
+    const skillsShooting = playerForm.skill2Input.value.split(',').map(s => s.trim()).filter(Boolean);
+    const agility = Number(playerForm.statAgility.value);
+    const defence = Number(playerForm.statDefence.value);
+    const sanity = Number(playerForm.statSanity.value);
+    const durability = Number(playerForm.statDurability.value);
+    const maxSpeed = Number(playerForm.statMaxSpeed.value);
+    const footballIQ = Number(playerForm.statFootballIQ.value);
+    const bestOn = playerForm.playerBestOnInput.value.trim();
+    const threatLevel = playerForm.playerThreatInput.value;
+
+    // Basic validation
+    if(!name || !grade || !threatLevel) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+    if(agility < 0 || agility > 100 || defence < 0 || defence > 100 ||
+      sanity < 0 || sanity > 100 || durability < 0 || durability > 100 ||
+      maxSpeed < 0 || maxSpeed > 50 || footballIQ < 0 || footballIQ > 200) {
+      alert('Please enter valid stats within allowed ranges.');
+      return;
+    }
+
+    // Handle image upload if any
+    let imageDataURL = null;
+    const file = playerImageInput.files[0];
+    try {
+      if (file) {
+        imageDataURL = await readFileAsDataURL(file);
+      } else if (editingPlayerId) {
+        // preserve existing image
+        const player = players.find(p=>p.id === editingPlayerId);
+        if (player) imageDataURL = player.imageDataURL || null;
+      }
+    } catch(error) {
+      console.error('Failed to read player image:', error);
+      alert('Failed to read the selected image file. Please try a different image.');
+      return;
+    }
+
+    if (editingPlayerId) {
+      // Edit existing player
+      const playerIndex = players.findIndex(p => p.id === editingPlayerId);
+      if (playerIndex > -1) {
+        players[playerIndex] = {
+          ...players[playerIndex],
+          name, grade, skillsMain, skillsShooting, agility, defence, sanity, durability, maxSpeed, footballIQ, bestOn, threatLevel,
+          imageDataURL: imageDataURL || players[playerIndex].imageDataURL,
+          comments: players[playerIndex].comments || []
+        };
+      }
+    } else {
+      // Add new player
+      const newPlayer = {
+        id: generateId(),
+        name,
+        grade,
+        skillsMain,
+        skillsShooting,
+        agility,
+        defence,
+        sanity,
+        durability,
+        maxSpeed,
+        footballIQ,
+        bestOn,
+        threatLevel,
+        imageDataURL,
+        comments: []
+      };
+      players.push(newPlayer);
+    }
+    saveData();
+    renderPlayers();
+    closeModal(modal);
+  });
+
+  // Utility read file as DataURL
+  function readFileAsDataURL(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = e => resolve(e.target.result);
+      reader.onerror = () => reject('Error reading file');
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // Handle add player button
+  addPlayerBtn.addEventListener('click', () => {
+    if(!ownerMode){
+      alert('Owner login required to add players.');
+      return;
+    }
+    clearPlayerForm();
+    openModal(modal);
+  });
+
+  // Close modal buttons
+  modalCloseBtn.addEventListener('click', () => {
+    closeModal(modal);
+  });
+
+  // Cancel button in player form
+  document.getElementById('btnCancel').addEventListener('click', () => {
+    closeModal(modal);
+  });
+
+  // Tab buttons listeners for switching views
+  Object.entries(tabs).forEach(([key, btn]) => {
+    btn.addEventListener('click', () => {
+      switchView(key);
+    });
+  });
+
+  // Delegate player cards clicks for edit, delete, image change, comment actions
+  views.players.addEventListener('click', async e => {
+    const target = e.target;
+    // Edit player
+    if(target.closest('.btn-edit-player')) {
+      if(!ownerMode){
+        alert('Only the owner can edit players.');
+        return;
+      }
+      const playerId = target.closest('.btn-edit-player').dataset.playerId;
+      const player = players.find(p => p.id === playerId);
+      if(player) {
+        fillPlayerForm(player);
+        openModal(modal);
+      }
+      return;
+    }
+    // Delete player
+    if(target.closest('.btn-delete-player')) {
+      if(!ownerMode){
+        alert('Only the owner can delete players.');
+        return;
+      }
+      const playerId = target.closest('.btn-delete-player').dataset.playerId;
+      confirmDeletion(`Are you sure you want to delete player?`, () => {
+        players = players.filter(p => p.id !== playerId);
+        saveData();
+        renderPlayers();
+      });
+      return;
+    }
+    // Change image button
+    if(target.closest('.player-image-upload')) {
+      if(!ownerMode){
+        alert('Only the owner can change player image.');
+        return;
+      }
+      const playerId = target.closest('.player-image-upload').dataset.playerId;
+      // Open file picker for this player image
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'image/*';
+      fileInput.style.display = 'none';
+      fileInput.addEventListener('change', async (ev) => {
+        try {
+          const file = ev.target.files[0];
+          if(file) {
+            const dataUrl = await readFileAsDataURL(file);
+            const player = players.find(p => p.id === playerId);
+            if(player) {
+              player.imageDataURL = dataUrl;
+              saveData();
+              renderPlayers();
+            }
+          }
+        } catch(err) {
+          alert('Failed to upload image. Please try again.');
+          console.error(err);
+        }
+      });
+      document.body.appendChild(fileInput);
+      fileInput.click();
+      fileInput.remove();
+      return;
+    }
+    // Delete comment button or save comment button
+    if(target.closest('.btn-delete-comment')) {
+      const commentLi = target.closest('.comment');
+      const playerId = commentLi.dataset.playerId;
+      const commentId = commentLi.dataset.commentId;
+      // Comments are editable by everyone, so no owner check
+      confirmDeletion('Are you sure you want to delete this comment?', () => {
+        const player = players.find(p => p.id === playerId);
+        if(player) {
+          player.comments = player.comments.filter(c => c.id !== commentId);
+          saveData();
+          renderPlayers();
+        }
+      });
+      return;
+    }
+    if(target.closest('.btn-save-comment')) {
+      const commentLi = target.closest('.comment');
+      const playerId = commentLi.dataset.playerId;
+      const commentId = commentLi.dataset.commentId;
+      const player = players.find(p => p.id === playerId);
+      if(!player) return;
+      const comment = player.comments.find(c => c.id === commentId);
+      if(!comment) return;
+      const commentTextDiv = commentLi.querySelector('.comment-text');
+      if(commentTextDiv) {
+        const newText = commentTextDiv.innerText.trim();
+        if(newText) {
+          comment.text = newText;
+          saveData();
+        } else {
+          alert('Comment cannot be empty.');
+        }
+      }
+      return;
+    }
+  });
+
+  // Delegate submit comment forms
+  views.players.addEventListener('submit', e => {
+    if(e.target.classList.contains('comment-form')) {
+      e.preventDefault();
+      const form = e.target;
+      const playerId = form.dataset.playerId;
+      const player = players.find(p => p.id === playerId);
+      if(!player) return;
+      const textarea = form.querySelector('textarea');
+      if(textarea && textarea.value.trim()) {
+        const newComment = {
+          id: generateId(),
+          text: textarea.value.trim()
+        };
+        player.comments.push(newComment);
+        saveData();
+        renderPlayers();
+      }
+    }
+  });
+
+  // Blogs section event delegation for edit, delete
+  views.blogs.addEventListener('click', e => {
+    const target = e.target;
+    // Delete blog
+    if(target.classList.contains('btn-delete-blog')) {
+      const blogId = target.dataset.blogId;
+      // Blogs are editable by everyone: no owner restriction
+      confirmDeletion('Are you sure you want to delete this blog?', () => {
+        blogs = blogs.filter(b => b.id !== blogId);
+        saveData();
+        renderBlogs();
+      });
+      return;
+    }
+    // Edit blog triggers open modal
+    if(target.classList.contains('btn-edit-blog')) {
+      const blogId = target.dataset.blogId;
+      const blog = blogs.find(b => b.id === blogId);
+      if(!blog) return;
+      openBlogModal(blog);
+      return;
+    }
+  });
+  // Blogs inline title and content editable - save on blur
+  views.blogs.addEventListener('blur', e => {
+    if(e.target.matches('.blog-title') || e.target.matches('.blog-content')) {
+      const blogId = e.target.dataset.blogId;
+      const blog = blogs.find(b => b.id === blogId);
+      if(blog) {
+        const newValue = e.target.innerText.trim();
+        if(e.target.classList.contains('blog-title')) {
+          blog.title = newValue;
+        } else if (e.target.classList.contains('blog-content')) {
+          blog.content = newValue;
+        }
+        saveData();
+      }
+    }
+  }, true);
+
+  // Blog modal open
+  btnAddBlog.addEventListener('click', () => {
+    openBlogModal();
+  });
+
+  blogModalCloseBtn.addEventListener('click', () => {
+    closeModal(blogModal);
+  });
+  document.getElementById('btnBlogCancel').addEventListener('click', () => {
+    closeModal(blogModal);
+  });
+
+  // Blog modal form submit
+  blogForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const title = blogForm.blogTitleInput.value.trim();
+    const content = blogForm.blogContentInput.value.trim();
+    if (!title || !content) {
+      alert('Please enter a title and content for the blog.');
+      return;
+    }
+    if(editingBlogId) {
+      const blogIndex = blogs.findIndex(b => b.id === editingBlogId);
+      if(blogIndex > -1){
+        blogs[blogIndex].title = title;
+        blogs[blogIndex].content = content;
+      }
+    } else {
+      blogs.push({
+        id: generateId(),
+        title,
+        content
+      });
+    }
+    saveData();
+    renderBlogs();
+    closeModal(blogModal);
+  });
+
+  // Open blog modal with optional blog data for editing
+  function openBlogModal(blog=null) {
+    if(blog) {
+      blogForm.blogTitleInput.value = blog.title;
+      blogForm.blogContentInput.value = blog.content;
+      editingBlogId = blog.id;
+      blogModal.querySelector('#blogModalTitle').textContent = 'Edit Blog';
+    } else {
+      blogForm.reset();
+      editingBlogId = null;
+      blogModal.querySelector('#blogModalTitle').textContent = 'Add New Blog';
+    }
+    openModal(blogModal);
+  }
+
+  // Confirm deletion modal logic
+  confirmModalCloseBtn.addEventListener('click', () => {
+    closeModal(confirmModal);
+    deleteContext = null;
+  });
+  confirmCancelBtn.addEventListener('click', () => {
+    closeModal(confirmModal);
+    deleteContext = null;
+  });
+
+  confirmOkBtn.addEventListener('click', () => {
+    if(deleteContext) {
+      deleteContext.action();
+      deleteContext = null;
+      closeModal(confirmModal);
+    }
+  });
+
+  function confirmDeletion(message, action) {
+    confirmMessage.textContent = message;
+    deleteContext = { action };
+    openModal(confirmModal);
+  }
+
+  // Pictures management
+  btnUploadPictures.addEventListener('click', () => {
+    if(!ownerMode){
+      alert('Owner login required to upload pictures.');
+      return;
+    }
+    const files = pictureFileInput.files;
+    if(!files || files.length === 0) {
+      alert('Please select image files to upload.');
+      return;
+    }
+    const validFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
+    if(validFiles.length === 0) {
+      alert('Only image files are allowed.');
+      return;
+    }
+    Promise.all(validFiles.map(f => readFileAsDataURL(f)))
+      .then(imagesData => {
+        imagesData.forEach(dataUrl => {
+          pictures.push({
+            id: generateId(),
+            dataUrl
+          });
+        });
+        pictureFileInput.value = '';
+        saveData();
+        renderPictures();
+      });
+  });
+  // Delete picture delegation
+  picturesGrid.addEventListener('click', e => {
+    if(e.target.classList.contains('picture-delete')) {
+      if(!ownerMode){
+        alert('Only owner can delete pictures.');
+        return;
+      }
+      const id = e.target.dataset.id;
+      confirmDeletion('Are you sure you want to delete this picture?', () => {
+        pictures = pictures.filter(p => p.id !== id);
+        saveData();
+        renderPictures();
+      });
+    }
+  });
+
+  // Owner login/logout toggle button click
+  ownerToggleBtn.addEventListener('click', () => {
+    if(ownerMode){
+      // Logout flow
+      setOwnerMode(false);
+      alert('Owner mode deactivated.');
+      renderPlayers();
+      renderPictures();
+    } else {
+      // Login flow
+      const pw = prompt('Please enter owner password:');
+      if(pw === OWNER_PASSWORD){
+        setOwnerMode(true);
+        alert('Owner mode activated. You can now edit players and pictures.');
+        renderPlayers();
+        renderPictures();
+      } else {
+        alert('Incorrect password. Access denied.');
+      }
+    }
+  });
+
+  // Initialize
+  function init() {
+    loadData();
+    renderPlayers();
+    renderBlogs();
+    renderPictures();
+    updateOwnerModeUI();
+    switchView('players');
+  }
+
+  // Accessibility: Keyboard trap within modals
+  function trapFocus(modalEl) {
+    const focusableElementsString = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]';
+    const focusableElements = modalEl.querySelectorAll(focusableElementsString);
+    const firstTabStop = focusableElements[0];
+    const lastTabStop = focusableElements[focusableElements.length - 1];
+    modalEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Tab') {
+        if (e.shiftKey) {
+          if (document.activeElement === firstTabStop) {
+            e.preventDefault();
+            lastTabStop.focus();
+          }
+        } else {
+          if (document.activeElement === lastTabStop) {
+            e.preventDefault();
+            firstTabStop.focus();
+          }
+        }
+      }
+      if(e.key === 'Escape') {
+        if(modalEl === modal) closeModal(modal);
+        if(modalEl === blogModal) closeModal(blogModal);
+        if(modalEl === confirmModal) closeModal(confirmModal);
+      }
+    });
+  }
+  trapFocus(modal);
+  trapFocus(blogModal);
+  trapFocus(confirmModal);
+
+  // Setup initial event listeners for keyboard enter on nav buttons
+  Object.values(tabs).forEach(button => {
+    button.addEventListener('keydown', e => {
+      if(e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        button.click();
+      }
+    });
+  });
+
+  init();
+</script>
+
+</body>
+</html>
+
