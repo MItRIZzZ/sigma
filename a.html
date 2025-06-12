@@ -1,1531 +1,1460 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Football Player Grader made by adi sigma</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-<style>
-  :root {
-    --color-bg: #ffffff;
-    --color-primary: #2563eb;
-    --color-primary-light: #3b82f6;
-    --color-primary-dark: #1e40af;
-    --color-text-primary: #111827;
-    --color-text-secondary: #6b7280;
-    --color-card-bg: #f9fafb;
-    --color-shadow: rgba(0,0,0,0.1);
-    --spacing-sm: 8px;
-    --spacing-md: 16px;
-    --spacing-lg: 32px;
-    --border-radius: 12px;
-    --font-family: 'Inter', sans-serif;
-    --transition-speed: 0.3s;
-    --danger-color: #dc2626;
-    --success-color: #16a34a;
-    --warning-color: #f59e0b;
-    --info-color: #3b82f6;
-    --threat-god: #facc15; /* gold */
-    --threat-dragon: #ef4444; /* red */
-    --threat-demon: #c026d3; /* purple */
-    --threat-tiger: #f97316; /* orange */
-    --threat-wolf: #6b7280; /* gray */
-  }
-  /* Resets */
-  * {
-    box-sizing: border-box;
-  }
-  body {
-    margin:0;
-    font-family: var(--font-family);
-    background: var(--color-bg);
-    color: var(--color-text-primary);
-    line-height: 1.5;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-  a {
-    color: var(--color-primary);
-    text-decoration: none;
-    transition: color var(--transition-speed);
-  }
-  a:hover, a:focus {
-    color: var(--color-primary-dark);
-  }
-  h1,h2,h3,h4,h5,h6 {
-    margin-top:0;
-    margin-bottom: var(--spacing-md);
-  }
-  h1 {
-    font-weight: 800;
-    font-size: 2.5rem;
-    letter-spacing: -0.02em;
-  }
-  h2 {
-    font-weight: 700;
-    font-size: 2rem;
-  }
-  h3 {
-    font-weight: 600;
-    font-size: 1.25rem;
-  }
-  p {
-    margin-bottom: var(--spacing-md);
-    color: var(--color-text-secondary);
-  }
-  button {
-    cursor: pointer;
-    font-family: inherit;
-    border: none;
-    border-radius: var(--border-radius);
-    padding: 0.6em 1.2em;
-    font-weight: 600;
-    transition: background-color var(--transition-speed), color var(--transition-speed);
-  }
-  button.primary {
-    background-color: var(--color-primary);
-    color: white;
-  }
-  button.primary:hover, button.primary:focus {
-    background-color: var(--color-primary-dark);
-  }
-  button.secondary {
-    background-color: var(--color-primary-light);
-    color: white;
-  }
-  button.secondary:hover, button.secondary:focus {
-    background-color: var(--color-primary);
-  }
-  button.danger {
-    background-color: var(--danger-color);
-    color: white;
-  }
-  button.danger:hover, button.danger:focus {
-    background-color: #b91c1c;
-  }
-  input, select, textarea {
-    font-family: inherit;
-    font-size: 1rem;
-    padding: 0.5em 0.75em;
-    border: 1.5px solid #d1d5db;
-    border-radius: var(--border-radius);
-    width: 100%;
-    transition: border-color var(--transition-speed);
-  }
-  input:focus, select:focus, textarea:focus {
-    border-color: var(--color-primary);
-    outline: none;
-  }
-  label {
-    font-weight: 600;
-    display: block;
-    margin-bottom: 0.3em;
-    color: var(--color-text-primary);
-  }
-
-  /* Layout */
-  #app {
-    max-width: 1200px;
-    margin: 0 auto;
-    flex-grow: 1;
-    padding: var(--spacing-lg);
-    display: flex;
-    flex-direction: column;
-  }
-
-  header {
-    position: sticky;
-    top: 0;
-    background: var(--color-bg);
-    border-bottom: 1px solid #e5e7eb;
-    z-index: 1000;
-    padding: 16px var(--spacing-lg);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 8px var(--color-shadow);
-    gap: var(--spacing-md);
-    flex-wrap: wrap;
-  }
-  .logo {
-    font-weight: 800;
-    font-size: 1.75rem;
-    color: var(--color-primary);
-    user-select: none;
-  }
-  nav {
-    display: flex;
-    gap: var(--spacing-lg);
-    flex-wrap: wrap;
-    align-items: center;
-  }
-  nav button {
-    all: unset;
-    cursor: pointer;
-    color: var(--color-primary);
-    font-weight: 600;
-    font-size: 1rem;
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: var(--border-radius);
-    transition: background-color var(--transition-speed);
-    user-select: none;
-  }
-  nav button.active,
-  nav button:hover,
-  nav button:focus {
-    background-color: var(--color-primary);
-    color: white;
-  }
-
-  main {
-    margin-top: var(--spacing-lg);
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* Player grid */
-  #playersView {
-    display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(320px,1fr));
-    gap: var(--spacing-lg);
-  }
-  .player-card {
-    background: var(--color-card-bg);
-    border-radius: var(--border-radius);
-    box-shadow: 0 4px 8px var(--color-shadow);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-  .player-image-container {
-    width: 100%;
-    background: #d1d5db;
-    aspect-ratio: 4 / 3;
-    position: relative;
-  }
-  .player-image-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-  .player-image-upload {
-    position: absolute;
-    bottom: 6px;
-    right: 6px;
-    background: rgba(0,0,0,0.5);
-    border-radius: 50%;
-    padding: 6px;
-    cursor: pointer;
-    color: white;
-  }
-  .player-content {
-    padding: var(--spacing-md);
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-  }
-  .player-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-  }
-  .player-name {
-    font-weight: 700;
-    font-size: 1.25rem;
-    color: var(--color-text-primary);
-  }
-  .player-grade {
-    color: var(--color-primary);
-    font-weight: 800;
-    font-size: 1.5rem;
-    user-select: none;
-  }
-  .player-skill-list,
-  .player-stat-list {
-    margin-top: var(--spacing-sm);
-    margin-bottom: var(--spacing-md);
-  }
-  .skill-group, .stat-group {
-    margin-bottom: var(--spacing-sm);
-  }
-  .skill-group strong, .stat-group strong {
-    color: var(--color-text-primary);
-  }
-  .skills-inline {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    color: var(--color-text-secondary);
-  }
-  .skills-inline span {
-    background: var(--color-primary-light);
-    color: white;
-    padding: 3px 10px;
-    border-radius: 16px;
-    font-size: 0.9rem;
-    user-select: none;
-  }
-  .player-footer {
-    margin-top: auto;
-  }
-  .threat-level {
-    display: inline-flex;
-    align-items: center;
-    font-weight: 700;
-    font-size: 1rem;
-    border-radius: 16px;
-    padding: 4px 12px;
-    color: white;
-    user-select: none;
-    gap: 6px;
-  }
-  .threat-god {
-    background-color: var(--threat-god);
-    color: #333;
-  }
-  .threat-dragon {
-    background-color: var(--threat-dragon);
-  }
-  .threat-demon {
-    background-color: var(--threat-demon);
-  }
-  .threat-tiger {
-    background-color: var(--threat-tiger);
-    color: #333;
-  }
-  .threat-wolf {
-    background-color: var(--threat-wolf);
-  }
-
-  /* Comments section */
-  .comments {
-    margin-top: var(--spacing-md);
-  }
-  .comments h4 {
-    margin-bottom: var(--spacing-sm);
-  }
-  .comment {
-    background: #fff;
-    border-radius: var(--border-radius);
-    padding: var(--spacing-sm);
-    margin-bottom: var(--spacing-sm);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.07);
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    position: relative;
-  }
-  .comment-text {
-    flex-grow: 1;
-    white-space: pre-wrap;
-    color: var(--color-text-primary);
-    outline: none;
-  }
-  .comment-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .comment-actions button {
-    background: transparent;
-    color: var(--color-primary);
-    font-size: 1.2rem;
-    line-height: 1;
-    padding: 2px;
-    user-select: none;
-  }
-  .comment-actions button:hover, .comment-actions button:focus {
-    color: var(--color-primary-dark);
-  }
-  .comment-form {
-    display: flex;
-    margin-top: var(--spacing-sm);
-    gap: 8px;
-  }
-  .comment-form textarea {
-    flex-grow: 1;
-    resize: vertical;
-    min-height: 60px;
-    font-size: 1rem;
-  }
-  .comment-form button {
-    align-self: flex-end;
-    padding: 0.6em 1em;
-  }
-
-  /* Forms and modal styles */
-  #modal, #confirmModal {
-    position: fixed;
-    top:0; left:0; right:0; bottom:0;
-    background: rgba(0,0,0,0.2);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 1500;
-  }
-  #modal.active, #confirmModal.active {
-    display: flex;
-  }
-  .modal-content {
-    background: var(--color-bg);
-    border-radius: var(--border-radius);
-    max-width: 600px;
-    width: 90%;
-    padding: var(--spacing-lg);
-    box-shadow: 0 8px 24px var(--color-shadow);
-    max-height: 90vh;
-    overflow-y: auto;
-    position: relative;
-  }
-  .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--spacing-md);
-  }
-  .modal-header h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
-  }
-  .modal-close {
-    background: transparent;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: var(--color-text-secondary);
-  }
-  .modal-close:hover, .modal-close:focus {
-    color: var(--color-primary);
-  }
-  form label {
-    margin-top: var(--spacing-md);
-  }
-  form button[type="submit"] {
-    margin-top: var(--spacing-lg);
-  }
-  form input[type="number"]::-webkit-inner-spin-button, form input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-
-  /* Blog Section */
-  #blogsView {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-lg);
-  }
-  .blog-card {
-    background: var(--color-card-bg);
-    border-radius: var(--border-radius);
-    padding: var(--spacing-md);
-    box-shadow: 0 4px 8px var(--color-shadow);
-    display: flex;
-    flex-direction: column;
-  }
-  .blog-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .blog-title {
-    font-weight: 700;
-    font-size: 1.5rem;
-    color: var(--color-text-primary);
-    outline: none;
-  }
-  .blog-content {
-    margin-top: var(--spacing-md);
-    color: var(--color-text-secondary);
-    white-space: pre-wrap;
-    outline: none;
-  }
-  .blog-actions {
-    margin-top: var(--spacing-md);
-    display: flex;
-    gap: var(--spacing-sm);
-  }
-  .blog-actions button {
-    background-color: var(--color-primary);
-    color: white;
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: var(--border-radius);
-    font-weight: 600;
-    font-size: 0.9rem;
-  }
-  .blog-actions button:hover {
-    background-color: var(--color-primary-dark);
-  }
-
-  /* Picture Manager */
-  #picturesView {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-lg);
-  }
-  .picture-uploader {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-md);
-    align-items: center;
-  }
-  .picture-uploader input[type="file"] {
-    flex-grow: 1;
-  }
-  .pictures-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(120px,1fr));
-    gap: var(--spacing-md);
-  }
-  .picture-item {
-    position: relative;
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    box-shadow: 0 4px 8px var(--color-shadow);
-    cursor: pointer;
-  }
-  .picture-item img {
-    width: 100%;
-    height: 100px;
-    object-fit: cover;
-    display: block;
-    border-radius: var(--border-radius);
-    user-select: none;
-  }
-  .picture-delete {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    background-color: rgba(220,38,38,0.85);
-    border-radius: 50%;
-    padding: 6px;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    line-height: 1;
-    border: none;
-  }
-  .picture-delete:hover,
-  .picture-delete:focus {
-    background-color: rgba(220,38,38,1);
-  }
-
-  /* Editable text highlight */
-  [contenteditable]:focus {
-    outline: 2px solid var(--color-primary);
-    background-color: #eff6ff;
-  }
-
-  /* Responsive */
-  @media (max-width: 640px) {
-    #app {
-      padding: var(--spacing-md);
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Football Grader - Pro Player Profiles & Blogs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <style>
+    /* Reset and base */
+    *, *::before, *::after {
+      box-sizing: border-box;
     }
-    header {
+    html {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      scroll-behavior: smooth;
+      background: #ffffff;
+      color: #374151; /* Neutral gray 700 */
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      min-height: 100vh;
+      -webkit-text-size-adjust: 100%;
+    }
+    body {
+      margin: 0;
+      display: flex;
       flex-direction: column;
-      gap: var(--spacing-md);
-      align-items: flex-start;
+      min-height: 100vh;
+      background: #f9fafb;
+      color: #374151;
+    }
+
+    /* Container centered max width */
+    .container {
+      margin: 0 auto;
+      max-width: 1200px;
+      padding-left: 24px;
+      padding-right: 24px;
+      width: 100%;
+    }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      background: #ffffff;
+      box-shadow: 0 2px 6px rgb(0 0 0 / 0.08);
+      z-index: 1000;
+      padding: 12px 0;
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .logo {
+      font-weight: 800;
+      font-size: 1.75rem;
+      color: #1f2937; /* Gray 800 */
+      user-select: none;
+      letter-spacing: -0.03em;
+      cursor: default;
     }
     nav {
-      justify-content: flex-start;
-      gap: var(--spacing-md);
+      display: flex;
+      gap: 24px;
+    }
+    nav button, nav a {
+      background: none;
+      border: none;
+      padding: 8px 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #4b5563; /* Gray 600 */
+      cursor: pointer;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+    nav button:hover, nav a:hover,
+    nav button[aria-pressed="true"], nav a[aria-current="page"] {
+      background-color: #4f46e5; /* Indigo 600 */
+      color: white;
+    }
+    nav button:focus-visible, nav a:focus-visible {
+      outline: 3px solid #4f46e5;
+      outline-offset: 2px;
+    }
+
+    /* Main area */
+    main {
+      flex: 1 0 auto;
+      padding: 40px 0 80px 0;
+      background: #f9fafb;
+      min-height: calc(100vh - 64px - 64px);
+    }
+
+    /* Footer */
+    footer {
+      background: #111827; /* Gray 900 */
+      color: #e5e7eb; /* Gray 200 */
+      padding: 32px 0;
+      text-align: center;
+      font-size: 0.875rem;
+      user-select: none;
+    }
+
+    /* Layout for content area: tabs */
+    .tab-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Player Cards */
+    .player-list {
+      display: grid;
+      gap: 32px;
+      grid-template-columns: repeat(auto-fit,minmax(320px,1fr));
+    }
+    .player-card {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgb(0 0 0 / 0.06);
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+      transition: box-shadow 0.3s ease;
+    }
+    .player-card:hover {
+      box-shadow: 0 12px 24px rgb(0 0 0 / 0.12);
+    }
+    .player-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .player-image {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #4f46e5; /* Indigo 600 */
+      flex-shrink: 0;
+    }
+    .player-info {
+      flex: 1;
+    }
+    .player-name {
+      font-weight: 700;
+      font-size: 1.25rem;
+      line-height: 1.2;
+      margin: 0;
+      color: #1f2937;
+    }
+    .player-grade {
+      font-weight: 800;
+      font-size: 1.125rem;
+      color: #6366f1; /* Indigo 400 */
+      margin-top: 4px;
+      user-select: none;
+    }
+    .threat-level {
+      display: inline-flex;
+      align-items: center;
+      font-weight: 600;
+      font-size: 1rem;
+      border-radius: 12px;
+      padding: 4px 12px;
+      user-select: none;
+      gap: 6px;
+      color: white;
+      white-space: nowrap;
+    }
+    /* Threat colors */
+    .threat-god {
+      background-color: #facc15; /* Yellow-400 */
+      color: #713f12;
+    }
+    .threat-dragon {
+      background-color: #ef4444; /* Red-500 */
+    }
+    .threat-demon {
+      background-color: #ec4899; /* Pink-500 */
+    }
+    .threat-tiger {
+      background-color: #f97316; /* Orange-500 */
+    }
+    .threat-wolf {
+      background-color: #10b981; /* Emerald-500 */
+    }
+
+    /* Attributes grid */
+    .player-attributes {
+      display: grid;
+      grid-template-columns: repeat(auto-fill,minmax(140px,1fr));
+      gap: 12px 24px;
+      margin: 20px 0 16px 0;
+    }
+    .attribute {
+      background: #f3f4f6; /* Gray 100 */
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #374151; /* Gray 700 */
+      user-select: none;
+    }
+    .attribute-label {
+      font-weight: 400;
+      font-size: 0.75rem;
+      color: #6b7280; /* Gray 500 */
+      display: block;
+      margin-bottom: 4px;
+      user-select: text;
+    }
+
+    /* Skills and shooting skills displayed as tags */
+    .skills-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .skill-tag {
+      background: #e0e7ff; /* Indigo-100 */
+      border-radius: 16px;
+      padding: 6px 14px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #3730a3; /* Indigo-900 */
+      user-select: text;
+      cursor: default;
+      white-space: nowrap;
+    }
+
+    /* Comments section */
+    .comments-section {
+      margin-top: 24px;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 16px;
+    }
+    .comments-title {
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 12px;
+      color: #1f2937;
+      user-select: none;
+    }
+    .comment-list {
+      max-height: 160px;
+      overflow-y: auto;
+      margin-bottom: 12px;
+      padding-right: 4px;
+    }
+    .comment-item {
+      background: #f3f4f6;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      color: #374151;
+      user-select: text;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      box-shadow: inset 0 0 3px rgb(0 0 0 / 0.05);
+    }
+    .comment-form {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .comment-form textarea {
+      flex: 1;
+      resize: vertical;
+      min-height: 40px;
+      max-height: 90px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+    .comment-form textarea:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 6px #a5b4fc;
+    }
+    .comment-form button {
+      background-color: #4f46e5;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s ease;
+      font-size: 1rem;
+    }
+    .comment-form button:hover:enabled {
+      background-color: #4338ca;
+    }
+    .comment-form button:disabled {
+      background-color: #a5b4fc;
+      cursor: not-allowed;
+    }
+
+    /* Blog section */
+    .blog-list {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .blog-post {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgb(0 0 0 / 0.06);
+    }
+    .blog-title {
+      font-weight: 800;
+      font-size: 1.75rem;
+      margin-bottom: 12px;
+      color: #1f2937;
+    }
+    .blog-date {
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin-bottom: 16px;
+      user-select: none;
+    }
+    .blog-content {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #374151;
+      white-space: pre-line;
+      user-select: text;
+      margin-bottom: 12px;
+    }
+    .blog-image-container {
+      margin-top: 16px;
+      text-align: center;
+    }
+    .blog-image {
+      max-width: 100%;
+      border-radius: 12px;
+      object-fit: contain;
+      box-shadow: 0 6px 12px rgb(0 0 0 / 0.1);
+    }
+
+    /* Admin area */
+    .admin-panel {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+      background: #f3f4f6;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgb(0 0 0 / 0.07);
+    }
+    .admin-title {
+      font-weight: 800;
+      font-size: 1.5rem;
+      margin-bottom: 24px;
+      color: #1f2937;
+      user-select: none;
+    }
+    .admin-section {
+      margin-bottom: 32px;
+    }
+    .admin-section h3 {
+      font-weight: 700;
+      font-size: 1.25rem;
+      margin-bottom: 16px;
+      user-select: none;
+    }
+
+    /* Form elements */
+    .form-group {
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      user-select: none;
+    }
+    input[type="text"],
+    input[type="number"],
+    input[type="file"],
+    select,
+    textarea {
       width: 100%;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      resize: vertical;
+      transition: border-color 0.3s ease;
     }
-    #playersView {
-      grid-template-columns: 1fr;
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    input[type="file"]:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 6px #a5b4fc;
     }
-  }
-</style>
+    textarea {
+      min-height: 80px;
+      max-height: 200px;
+    }
+    button.btn-primary, button.btn-danger, button.btn-secondary {
+      cursor: pointer;
+      border-radius: 8px;
+      padding: 12px 22px;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: background-color 0.3s ease;
+      user-select: none;
+      border: none;
+    }
+    button.btn-primary {
+      background: #4f46e5;
+      color: white;
+    }
+    button.btn-primary:hover {
+      background: #4338ca;
+    }
+    button.btn-secondary {
+      background: #6b7280;
+      color: white;
+    }
+    button.btn-secondary:hover {
+      background: #4b5563;
+    }
+    button.btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+    button.btn-danger:hover {
+      background: #b91c1c;
+    }
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Editable lists style */
+    .list-item {
+      background: white;
+      box-shadow: inset 0 0 3px rgb(0 0 0 / 0.06);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .list-item > div {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .list-item label {
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin-bottom: 4px;
+    }
+    .list-item input,
+    .list-item textarea,
+    .list-item select {
+      font-size: 0.9rem;
+      resize: vertical;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      padding: 6px 10px;
+      background: #f9fafb;
+    }
+    .list-item textarea {
+      min-height: 50px;
+    }
+    .list-item-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex-shrink: 0;
+      justify-content: center;
+    }
+    .icon-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+      color: #6b7280;
+      transition: color 0.3s ease;
+      border-radius: 6px;
+    }
+    .icon-button:hover {
+      color: #ef4444;
+      background: #ffeaea;
+    }
+    /* Icon sizes for better UI */
+    .material-icons {
+      font-size: 20px;
+      user-select: none;
+    }
+
+    /* Responsive header navigation for mobile */
+    @media (max-width: 640px) {
+      .header-inner {
+        padding: 0 16px;
+      }
+      nav {
+        gap: 12px;
+      }
+      nav button, nav a {
+        padding: 8px 6px;
+        font-size: 0.9rem;
+      }
+      .container {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+      main {
+        padding: 24px 0 64px;
+      }
+    }
+
+    /* Rich text editing for blog posts */
+    .content-editable {
+      background: #fff;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 16px;
+      min-height: 120px;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #374151;
+      overflow-y: auto;
+      outline: none;
+      margin-bottom: 12px;
+    }
+    .content-editable:empty::before {
+      content: attr(data-placeholder);
+      color: #9ca3af;
+      font-style: italic;
+      user-select: none;
+    }
+
+  </style>
 </head>
 <body>
-<header>
-  <div class="logo" tabindex="0" aria-label="Football Player Grader Home">Football Grader</div>
-  <nav role="navigation" aria-label="Main Navigation">
-    <button aria-controls="playersView" aria-selected="true" role="tab" id="tabPlayers" class="active">Players</button>
-    <button aria-controls="blogsView" aria-selected="false" role="tab" id="tabBlogs">Blogs</button>
-    <button aria-controls="picturesView" aria-selected="false" role="tab" id="tabPictures">Pictures</button>
-    <button id="btnAddPlayer" title="Add New Player" aria-label="Add New Player" class="primary" style="margin-left: auto;">+ Add Player</button>
-    <button id="ownerToggleBtn" aria-label="Owner Login" title="Owner Login" class="secondary">Owner Login</button>
-  </nav>
-</header>
-<main id="app" role="main">
-  <!-- Players View -->
-  <section id="playersView" role="tabpanel" aria-labelledby="tabPlayers">
-  </section>
-
-  <!-- Blogs View -->
-  <section id="blogsView" role="tabpanel" aria-labelledby="tabBlogs" hidden>
-    <button id="btnAddBlog" class="primary" style="margin-bottom: var(--spacing-md); max-width: 180px;">+ Add New Blog</button>
-  </section>
-
-  <!-- Pictures View -->
-  <section id="picturesView" role="tabpanel" aria-labelledby="tabPictures" hidden>
-    <div class="picture-uploader" id="pictureUploader">
-      <input type="file" id="pictureFileInput" accept="image/*" aria-label="Upload Pictures" multiple />
-      <button id="btnUploadPictures" class="primary">Upload</button>
+  <header role="banner">
+    <div class="header-inner">
+      <div class="logo" aria-label="Football Grader Website">Football Grader</div>
+      <nav role="navigation" aria-label="Primary">
+        <button type="button" aria-pressed="true" id="btn-players" aria-controls="players-section" aria-haspopup="true">Players</button>
+        <button type="button" aria-pressed="false" id="btn-blogs" aria-controls="blogs-section" aria-haspopup="true">Blogs</button>
+        <button type="button" aria-pressed="false" id="btn-admin" aria-controls="admin-section" aria-haspopup="true">Admin</button>
+      </nav>
     </div>
-    <div class="pictures-grid" aria-live="polite" aria-relevant="additions removals" aria-atomic="true">
-    </div>
-  </section>
-</main>
+  </header>
 
-<!-- Modal for adding/editing player -->
-<div id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2 id="modalTitle">Add New Player</h2>
-      <button class="modal-close" aria-label="Close Modal">&times;</button>
-    </div>
-    <form id="playerForm" novalidate>
-      <label for="playerNameInput">Name</label>
-      <input type="text" id="playerNameInput" required aria-required="true" minlength="2" maxlength="50" />
-      
-      <label for="playerGradeInput">Grade (S, A, B, C, D)</label>
-      <select id="playerGradeInput" required aria-required="true">
-        <option value="">Select Grade</option>
-        <option value="S">S</option>
-        <option value="A">A</option>
-        <option value="B">B</option>
-        <option value="C">C</option>
-        <option value="D">D</option>
-      </select>
-
-      <fieldset style="margin-top: var(--spacing-md); border:none; padding:0;">
-        <legend><strong>Skills</strong> (comma separated)</legend>
-        <label for="skill1Input">Main Skills</label>
-        <input type="text" id="skill1Input" placeholder="flick up, rainbow flick" aria-describedby="skill1Desc" />
-        <div id="skill1Desc" class="sr-only">Enter main skills separated by commas</div>
-
-        <label for="skill2Input">Shooting Skills</label>
-        <input type="text" id="skill2Input" placeholder="trivela, rabona, kaiser impact" aria-describedby="skill2Desc" />
-        <div id="skill2Desc" class="sr-only">Enter shooting skills separated by commas</div>
-      </fieldset>
-
-      <fieldset style="margin-top: var(--spacing-md); border:none; padding:0;">
-        <legend><strong>Stats</strong></legend>
-        <label for="statAgility">Agility (0-100)</label>
-        <input type="number" id="statAgility" min="0" max="100" step="1" required />
-        <label for="statDefence">Defence (0-100)</label>
-        <input type="number" id="statDefence" min="0" max="100" step="1" required />
-        <label for="statSanity">Sanity (0-100)</label>
-        <input type="number" id="statSanity" min="0" max="100" step="1" required />
-        <label for="statDurability">Durability (0-100)</label>
-        <input type="number" id="statDurability" min="0" max="100" step="0.1" required />
-        <label for="statMaxSpeed">Max Speed (km/h)</label>
-        <input type="number" id="statMaxSpeed" min="0" max="50" step="0.1" required />
-        <label for="statFootballIQ">Football IQ</label>
-        <input type="number" id="statFootballIQ" min="0" max="200" step="1" required />
-      </fieldset>
-
-      <label for="playerBestOnInput">Best On (e.g. futsal)</label>
-      <input type="text" id="playerBestOnInput" maxlength="50" required />
-
-      <label for="playerThreatInput">Threat Level</label>
-      <select id="playerThreatInput" required>
-        <option value="">Select Threat Level</option>
-        <option value="god">God</option>
-        <option value="dragon">Dragon</option>
-        <option value="demon">Demon</option>
-        <option value="tiger">Tiger</option>
-        <option value="wolf">Wolf</option>
-      </select>
-
-      <label for="playerImageInput">Player Image</label>
-      <input type="file" id="playerImageInput" accept="image/*" />
-
-      <div style="margin-top: var(--spacing-lg); display: flex; justify-content: flex-end; gap: var(--spacing-md);">
-        <button type="button" id="btnCancel" class="secondary">Cancel</button>
-        <button type="submit" class="primary">Save Player</button>
+  <main>
+    <section id="players-section"  class="tab-content" role="region" aria-live="polite" aria-label="Player Profiles">
+      <div class="player-list" id="player-list" tabindex="0" aria-label="List of players">
+        <!-- Player cards inserted here -->
       </div>
-    </form>
-  </div>
-</div>
+    </section>
 
-<!-- Modal for adding/editing blog -->
-<div id="blogModal" role="dialog" aria-modal="true" aria-labelledby="blogModalTitle" tabindex="-1" style="display:none;">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2 id="blogModalTitle">Add New Blog</h2>
-      <button class="modal-close" aria-label="Close Blog Modal">&times;</button>
-    </div>
-    <form id="blogForm" novalidate>
-      <label for="blogTitleInput">Title</label>
-      <input type="text" id="blogTitleInput" required minlength="2" maxlength="100" />
-
-      <label for="blogContentInput">Content</label>
-      <textarea id="blogContentInput" rows="6" required></textarea>
-
-      <div style="margin-top: var(--spacing-lg); display: flex; justify-content: flex-end; gap: var(--spacing-md);">
-        <button type="button" id="btnBlogCancel" class="secondary">Cancel</button>
-        <button type="submit" class="primary">Save Blog</button>
+    <section id="blogs-section" class="tab-content" role="region" aria-live="polite" aria-label="Blog posts" hidden>
+      <div class="blog-list" id="blog-list" tabindex="0" aria-label="List of blog posts">
+        <!-- Blog posts inserted here -->
       </div>
-    </form>
-  </div>
-</div>
+    </section>
 
-<!-- Confirmation modal for delete actions -->
-<div id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle" tabindex="-1">
-  <div class="modal-content" style="max-width: 400px;">
-    <div class="modal-header">
-      <h2 id="confirmModalTitle">Confirm Deletion</h2>
-      <button class="modal-close" aria-label="Close Confirm Modal">&times;</button>
+    <section id="admin-section" class="tab-content" role="region" aria-live="polite" aria-label="Admin panel" hidden>
+      <!-- Admin Login -->
+      <div id="admin-login-container" style="max-width: 380px; margin: 0 auto;">
+        <h2 class="admin-title">Admin Login</h2>
+        <form id="admin-login-form" aria-label="Admin login form">
+          <div class="form-group">
+            <label for="admin-password">Enter Admin Password:</label>
+            <input id="admin-password" type="password" autocomplete="current-password" aria-required="true" aria-describedby="admin-password-desc" />
+            <small id="admin-password-desc" style="color:#6b7280;">Admin password is required to access editing features.</small>
+          </div>
+          <button type="submit" class="btn-primary" aria-label="Login as admin">Login</button>
+        </form>
+      </div>
+
+      <!-- Admin Panel Content (Shown after login) -->
+      <div id="admin-panel-content" style="display:none;">
+        <h2 class="admin-title">Admin Panel</h2>
+
+        <section class="admin-section" aria-label="Manage Players">
+          <h3>Manage Players</h3>
+          <button id="btn-add-player" class="btn-primary" type="button" aria-label="Add new player">+ Add New Player</button>
+          <div id="admin-player-list" style="margin-top: 16px;">
+            <!-- Editable list of players here -->
+          </div>
+        </section>
+
+        <section class="admin-section" aria-label="Manage Blogs">
+          <h3>Manage Blogs</h3>
+          <button id="btn-add-blog" class="btn-primary" type="button" aria-label="Add new blog post">+ Add New Blog</button>
+          <div id="admin-blog-list" style="margin-top: 16px;">
+            <!-- Editable list of blogs here -->
+          </div>
+        </section>
+
+        <section class="admin-section" aria-label="Manage Pictures">
+          <h3>Manage Pictures</h3>
+          <div id="admin-pictures-list" style="margin-top: 12px; max-height: 250px; overflow-y: auto; border: 1px solid #d1d5db; border-radius: 12px; padding: 12px;">
+            <!-- Pictures in use or uploaded -->
+          </div>
+
+          <form id="picture-upload-form" style="margin-top: 16px;" aria-label="Upload new picture form">
+            <div class="form-group">
+              <label for="picture-upload-input">Upload Picture (JPG, PNG, max 2MB):</label>
+              <input id="picture-upload-input" type="file" accept="image/png, image/jpeg" />
+            </div>
+            <button type="submit" class="btn-primary">Upload Picture</button>
+          </form>
+        </section>
+
+        <section class="admin-section" aria-label="Logout">
+          <button id="btn-logout" type="button" class="btn-danger">Logout Admin</button>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer role="contentinfo">
+    <div class="container" tabindex="-1">
+      &copy; 2025 Football Grader. Crafted with modern web standards.
     </div>
-    <p id="confirmModalMessage">Are you sure you want to delete this item?</p>
-    <div style="margin-top: var(--spacing-lg); display: flex; justify-content: flex-end; gap: var(--spacing-md);">
-      <button id="confirmCancelBtn" class="secondary">Cancel</button>
-      <button id="confirmOkBtn" class="primary">Delete</button>
-    </div>
-  </div>
-</div>
+  </footer>
 
 <script>
-  // Data Storage Keys
-  const STORAGE_KEYS = {
-    PLAYERS: 'footballGraderPlayers',
-    BLOGS: 'footballGraderBlogs',
-    PICTURES: 'footballGraderPictures',
-    OWNER_MODE: 'footballGraderOwnerMode'
-  };
+  (() => {
+    "use strict";
 
-  // Elements
-  const tabs = {
-    players: document.getElementById('tabPlayers'),
-    blogs: document.getElementById('tabBlogs'),
-    pictures: document.getElementById('tabPictures')
-  };
-  const views = {
-    players: document.getElementById('playersView'),
-    blogs: document.getElementById('blogsView'),
-    pictures: document.getElementById('picturesView')
-  };
-  const addPlayerBtn = document.getElementById('btnAddPlayer');
-  const modal = document.getElementById('modal');
-  const modalCloseBtn = modal.querySelector('.modal-close');
-  const playerForm = document.getElementById('playerForm');
-  const playerImageInput = document.getElementById('playerImageInput');
+    // Data store keys
+    const STORAGE_KEYS = {
+      players: 'football_grader_players',
+      blogs: 'football_grader_blogs',
+      pictures: 'football_grader_pictures',
+      comments: 'football_grader_comments',
+      admin_pass: 'football_grader_admin_pass',
+      admin_logged_in: 'football_grader_admin_logged_in',
+    };
 
-  // Blog modal elements
-  const blogModal = document.getElementById('blogModal');
-  const blogModalCloseBtn = blogModal.querySelector('.modal-close');
-  const blogForm = document.getElementById('blogForm');
-  const btnAddBlog = document.getElementById('btnAddBlog');
+    // Default admin password (hashed or plaintext here? We'll store in localStorage plaintext for demo; in real app hashing needed)
+    const DEFAULT_ADMIN_PASSWORD = 'admin123'; // Should prompt user to change after first login in real life
 
-  // Confirmation modal elements
-  const confirmModal = document.getElementById('confirmModal');
-  const confirmModalCloseBtn = confirmModal.querySelector('.modal-close');
-  const confirmCancelBtn = document.getElementById('confirmCancelBtn');
-  const confirmOkBtn = document.getElementById('confirmOkBtn');
-  const confirmMessage = document.getElementById('confirmModalMessage');
+    // Threat levels and colors for UI
+    const THREAT_LEVELS = ['god','dragon','demon','tiger','wolf'];
+    // Map threat name to class for badge color
+    const THREAT_COLORS = {
+      god: 'threat-god',
+      dragon: 'threat-dragon',
+      demon: 'threat-demon',
+      tiger: 'threat-tiger',
+      wolf: 'threat-wolf',
+    };
 
-  // Pictures view elements
-  const pictureFileInput = document.getElementById('pictureFileInput');
-  const btnUploadPictures = document.getElementById('btnUploadPictures');
-  const picturesGrid = views.pictures.querySelector('.pictures-grid');
-  const pictureUploaderDiv = document.getElementById('pictureUploader');
+    // Demo initial data for players
+    const DEMO_PLAYERS = [
+      {
+        id: 'p1',
+        name: 'Adimulia Danendra Iskandar',
+        grade: 'S',
+        skill: ['flick up', 'rainbow flick'],
+        shootingSkill: ['trivela', 'rabona', 'kaiser impact'],
+        agility: 80,
+        defence: 95,
+        sanity: 75,
+        threat: 'dragon',
+        durability: 92.5,
+        maxSpeed: 28,
+        footballIQ: 120,
+        bestOn: 'futsal',
+        pictureUrl: 'https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/443a7375-f848-4fd6-852a-1cefbcc67e91.png',
+      }
+    ];
 
-  const ownerToggleBtn = document.getElementById('ownerToggleBtn');
+    // Demo initial data for blogs
+    const DEMO_BLOGS = [
+      {
+        id: 'b1',
+        title: 'Welcome to Football Grader',
+        date: (new Date()).toISOString(),
+        content: 'This is the first blog post on Football Grader! Here you can find the best football players graded and analyzed carefully.',
+        imageUrl: 'https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/e6e50ecc-2628-4f35-b97a-b5100f777681.png',
+      }
+    ];
 
-  // Current State
-  let currentView = 'players'; // default
-  let editingPlayerId = null;
-  let editingBlogId = null;
-  let ownerMode = false;
-  // To track delete confirm context
-  let deleteContext = null;
+    // Icon mapping for skill tags - using Material icons fallback for simplicity
+    const SKILL_ICONS = {
+      'flick up': 'sports_soccer',
+      'rainbow flick': 'flare',
+      'trivela': 'sports_soccer',
+      'rabona': 'star',
+      'kaiser impact': 'bolt',
+    };
 
-  // Password for owner mode - keep this secret, not secure for production
-  const OWNER_PASSWORD = 'admin123';
+    // Global state
+    let state = {
+      players: [],
+      blogs: [],
+      pictures: [],
+      comments: {},
+      adminLoggedIn: false,
+    };
 
-  // Initialize app data
-  let players = [];
-  let blogs = [];
-  let pictures = []; // Array of {id, dataUrl}
+    // Utility: Generate unique ID for new entries
+    function genId(prefix = 'id') {
+      return prefix + '_' + Math.random().toString(36).substr(2, 9);
+    }
 
-  // Utility - generate ID
-  function generateId() {
-    return '_' + Math.random().toString(36).substr(2,9);
-  }
+    // Load data from localStorage or initialize defaults
+    function loadData() {
+      let storedPlayers = localStorage.getItem(STORAGE_KEYS.players);
+      if (storedPlayers) {
+        try {
+          state.players = JSON.parse(storedPlayers);
+        } catch {
+          state.players = [];
+        }
+      } else {
+        state.players = DEMO_PLAYERS;
+        savePlayers();
+      }
 
-  // Save/load from localStorage
-  function saveData() {
-    localStorage.setItem(STORAGE_KEYS.PLAYERS, JSON.stringify(players));
-    localStorage.setItem(STORAGE_KEYS.BLOGS, JSON.stringify(blogs));
-    localStorage.setItem(STORAGE_KEYS.PICTURES, JSON.stringify(pictures));
-  }
-  function loadData() {
-    const p = localStorage.getItem(STORAGE_KEYS.PLAYERS);
-    const b = localStorage.getItem(STORAGE_KEYS.BLOGS);
-    const pic = localStorage.getItem(STORAGE_KEYS.PICTURES);
-    players = p ? JSON.parse(p) : [];
-    blogs = b ? JSON.parse(b) : [];
-    pictures = pic ? JSON.parse(pic) : [];
-    const storedOwner = localStorage.getItem(STORAGE_KEYS.OWNER_MODE);
-    ownerMode = storedOwner === 'true';
-  }
+      let storedBlogs = localStorage.getItem(STORAGE_KEYS.blogs);
+      if (storedBlogs) {
+        try {
+          state.blogs = JSON.parse(storedBlogs);
+        } catch {
+          state.blogs = [];
+        }
+      } else {
+        state.blogs = DEMO_BLOGS;
+        saveBlogs();
+      }
 
-  // Set owner mode and update UI accordingly
-  function setOwnerMode(enabled) {
-    ownerMode = enabled;
-    localStorage.setItem(STORAGE_KEYS.OWNER_MODE, String(ownerMode));
-    updateOwnerModeUI();
-  }
+      let storedPictures = localStorage.getItem(STORAGE_KEYS.pictures);
+      if (storedPictures) {
+        try {
+          state.pictures = JSON.parse(storedPictures);
+        } catch {
+          state.pictures = [];
+        }
+      } else {
+        state.pictures = DEMO_PLAYERS.map(p => ({id: p.id + '_pic', url: p.pictureUrl}));
+        savePictures();
+      }
 
-  // Update UI depending on ownerMode state
-  function updateOwnerModeUI() {
-    // Show/hide add player button
-    addPlayerBtn.style.display = ownerMode ? 'inline-block' : 'none';
+      // Comments: object with key=playerId, value=array comments
+      let storedComments = localStorage.getItem(STORAGE_KEYS.comments);
+      if (storedComments) {
+        try {
+          state.comments = JSON.parse(storedComments);
+        } catch {
+          state.comments = {};
+        }
+      } else {
+        state.comments = {};
+        saveComments();
+      }
 
-    // Show/hide picture uploader
-    pictureUploaderDiv.style.display = ownerMode ? 'flex' : 'none';
+      // Admin login state
+      state.adminLoggedIn = localStorage.getItem(STORAGE_KEYS.admin_logged_in) === 'true';
 
-    // Update player cards: show or hide edit / delete / change image buttons
-    document.querySelectorAll('.player-card').forEach(card => {
-      const editBtn = card.querySelector('.btn-edit-player');
-      const delBtn = card.querySelector('.btn-delete-player');
-      const imgUploadBtn = card.querySelector('.player-image-upload');
-      if(editBtn) editBtn.style.display = ownerMode ? 'inline-block' : 'none';
-      if(delBtn) delBtn.style.display = ownerMode ? 'inline-block' : 'none';
-      if(imgUploadBtn) imgUploadBtn.style.display = ownerMode ? 'inline-block' : 'none';
-    });
+      // If no stored admin pass, save default pass to storage for future use
+      if (!localStorage.getItem(STORAGE_KEYS.admin_pass)) {
+        localStorage.setItem(STORAGE_KEYS.admin_pass, DEFAULT_ADMIN_PASSWORD);
+      }
+    }
 
-    // Update owner toggle button text
-    ownerToggleBtn.textContent = ownerMode ? 'Logout Owner' : 'Owner Login';
-  }
+    // Save data to localStorage functions
+    function savePlayers() {
+      localStorage.setItem(STORAGE_KEYS.players, JSON.stringify(state.players));
+    }
+    function saveBlogs() {
+      localStorage.setItem(STORAGE_KEYS.blogs, JSON.stringify(state.blogs));
+    }
+    function savePictures() {
+      localStorage.setItem(STORAGE_KEYS.pictures, JSON.stringify(state.pictures));
+    }
+    function saveComments() {
+      localStorage.setItem(STORAGE_KEYS.comments, JSON.stringify(state.comments));
+    }
+    function setAdminLoggedIn(val) {
+      state.adminLoggedIn = val;
+      localStorage.setItem(STORAGE_KEYS.admin_logged_in, val ? 'true' : 'false');
+    }
 
-  // Render functions
+    // Template renderers
+    const playerListEl = document.getElementById('player-list');
+    const blogListEl = document.getElementById('blog-list');
+    const adminPlayerListEl = document.getElementById('admin-player-list');
+    const adminBlogListEl = document.getElementById('admin-blog-list');
+    const adminPicturesListEl = document.getElementById('admin-pictures-list');
+    const adminPanelContentEl = document.getElementById('admin-panel-content');
+    const adminLoginContainerEl = document.getElementById('admin-login-container');
+    const adminLoginForm = document.getElementById('admin-login-form');
+    const adminPasswordInput = document.getElementById('admin-password');
+    const pictureUploadForm = document.getElementById('picture-upload-form');
+    const pictureUploadInput = document.getElementById('picture-upload-input');
 
-  // Map threat to class and icon text
-  const threatLevels = {
-    god: { className: 'threat-god', display: 'God', icon: 'emoji_events' },
-    dragon: { className: 'threat-dragon', display: 'Dragon', icon: 'whatshot' },
-    demon: { className: 'threat-demon', display: 'Demon', icon: 'fire_extinguisher' },
-    tiger: { className: 'threat-tiger', display: 'Tiger', icon: 'pets' },
-    wolf: { className: 'threat-wolf', display: 'Wolf', icon: 'security' }
-  };
+    // Utility: format date for blog
+    function formatDate(isoStr) {
+      const d = new Date(isoStr);
+      return d.toLocaleDateString(undefined, {year:'numeric', month: 'long', day: 'numeric'});
+    }
 
-  function createSkillSpans(skills) {
-    if (!skills || skills.length === 0) return '';
-    return skills.map(s => `<span>${escapeHTML(s.trim())}</span>`).join('');
-  }
+    // Escape HTML (for comments/input)
+    function escapeHtml(text) {
+      if (!text) return '';
+      return text.replace(/[&<>"']/g, (m) => {
+        switch(m) {
+          case '&': return '&amp;';
+          case '<': return '&lt;';
+          case '>': return '&gt;';
+          case '"': return '&quot;';
+          case '\'': return '&#039;';
+          default: return m;
+        }
+      });
+    }
 
-  // Escape HTML helper for security
-  function escapeHTML (text) {
-    const div = document.createElement('div');
-    div.innerText = text;
-    return div.innerHTML;
-  }
+    // Render all players in main view
+    function renderPlayers() {
+      playerListEl.innerHTML = '';
+      if(!state.players.length) {
+        playerListEl.innerHTML = '<p style="font-weight:600; text-align:center; color:#6b7280;">No players available</p>';
+        return;
+      }
+      state.players.forEach(player => {
+        const playerComments = state.comments[player.id] || [];
+        const skillTags = player.skill.map(s => `<span class="skill-tag" title="${escapeHtml(s)}">${escapeHtml(s)}</span>`).join('');
+        const shootingTags = player.shootingSkill.map(s => `<span class="skill-tag" title="${escapeHtml(s)}">${escapeHtml(s)}</span>`).join('');
+        const threatClass = THREAT_COLORS[player.threat.toLowerCase()] || 'threat-wolf';
 
-  // Render single player card
-  function renderPlayer(player) {
-    const threat = threatLevels[player.threatLevel] || { className: 'threat-wolf', display: 'Unknown', icon: 'help_outline' };
-    // Skills split
-    const mainSkills = player.skillsMain || [];
-    const shootingSkills = player.skillsShooting || [];
+        // Build player card HTML
+        const playerCard = document.createElement('article');
+        playerCard.className = 'player-card';
+        playerCard.setAttribute('tabindex', '0');
+        playerCard.setAttribute('aria-label', `Player profile: ${player.name}, Grade ${player.grade}`);
 
-    // Conditionally show owner-only controls
-    const ownerControls = ownerMode ? `
-      <button type="button" class="secondary btn-edit-player" data-player-id="${player.id}" aria-label="Edit player ${escapeHTML(player.name)}">Edit</button>
-      <button type="button" class="danger btn-delete-player" data-player-id="${player.id}" aria-label="Delete player ${escapeHTML(player.name)}" style="background-color: var(--danger-color); color: white;">Delete</button>
-    ` : '';
-
-    const imgUploadBtn = ownerMode ? `
-      <button class="player-image-upload" aria-label="Change player image" title="Change Player Image" data-player-id="${player.id}" type="button" tabindex="0">
-        <span class="material-icons" aria-hidden="true">photo_camera</span>
-      </button>
-    ` : '';
-
-    return `
-      <article class="player-card" tabindex="0" aria-label="Player ${escapeHTML(player.name)}, grade ${player.grade}, threat level ${threat.display}">
-        <div class="player-image-container">
-          <img src="${player.imageDataURL || 'https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/1439308b-1976-49cc-a9a5-8a4d193d0710.png'}" alt="Picture of player ${escapeHTML(player.name)}" />
-          ${imgUploadBtn}
-        </div>
-        <div class="player-content">
-          <header class="player-header">
-            <h3 class="player-name">${escapeHTML(player.name)}</h3>
-            <div class="player-grade" aria-label="Grade">${escapeHTML(player.grade)}</div>
-          </header>
-          <section class="player-skill-list" aria-label="Skills">
-            <div class="skill-group"><strong>Skills:</strong> <span class="skills-inline">${createSkillSpans(mainSkills)}</span></div>
-            <div class="skill-group"><strong>Shooting Skills:</strong> <span class="skills-inline">${createSkillSpans(shootingSkills)}</span></div>
-          </section>
-          <section class="player-stat-list" aria-label="Statistics">
-            <div class="stat-group">Agility: <strong>${player.agility}</strong></div>
-            <div class="stat-group">Defence: <strong>${player.defence}</strong></div>
-            <div class="stat-group">Sanity: <strong>${player.sanity}</strong></div>
-            <div class="stat-group">Durability: <strong>${player.durability.toFixed(1)}</strong></div>
-            <div class="stat-group">Max Speed: <strong>${player.maxSpeed.toFixed(1)} km/h</strong></div>
-            <div class="stat-group">Football IQ: <strong>${player.footballIQ}</strong></div>
-            <div class="stat-group">Best On: <strong>${escapeHTML(player.bestOn)}</strong></div>
-          </section>
-          <div class="player-footer">
-            <div class="threat-level ${threat.className}" aria-label="Threat level ${threat.display}">
-              <span class="material-icons" aria-hidden="true" style="font-size: 1.2rem;">${threat.icon}</span> ${threat.display}
+        playerCard.innerHTML = `
+          <div class="player-header">
+            <img        
+              src="${escapeHtml(player.pictureUrl || 'https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/f593b53d-3434-44a2-884c-ee0c87a89020.png')}" 
+              alt="Photo of ${escapeHtml(player.name)}"
+              class="player-image"
+              onerror="this.onerror=null;this.src='https://placehold.co/72x72/png?text=No+Img&font=Inter&font-size=14&bg=9ca3af&color=ffffff';" />
+            <div class="player-info">
+              <h3 class="player-name">${escapeHtml(player.name)}</h3>
+              <div class="player-grade" aria-label="Player grade">Grade: ${escapeHtml(player.grade)}</div>
+              <div class="threat-level ${threatClass}" aria-label="Threat level: ${escapeHtml(player.threat)}">
+                <span class="material-icons" aria-hidden="true">priority_high</span>
+                ${escapeHtml(player.threat.charAt(0).toUpperCase() + player.threat.slice(1))}
+              </div>
             </div>
           </div>
-          <hr style="margin: var(--spacing-md) 0;" />
-          <section class="comments" aria-label="Comments for ${escapeHTML(player.name)}">
-            <h4>Comments</h4>
-            <ul class="comment-list" data-player-id="${player.id}" style="list-style:none; padding:0;">
-              <!-- commenter will be rendered dynamically -->
-            </ul>
-            <form class="comment-form" data-player-id="${player.id}" aria-label="Add a comment for ${escapeHTML(player.name)}">
-              <textarea rows="2" aria-label="Add a comment text" required placeholder="Add a comment..."></textarea>
-              <button type="submit" class="primary">Add</button>
+          <div>
+            <div class="attribute"><span class="attribute-label">Agility</span> ${player.agility}</div>
+            <div class="attribute"><span class="attribute-label">Defence</span> ${player.defence}</div>
+            <div class="attribute"><span class="attribute-label">Sanity</span> ${player.sanity}</div>
+            <div class="attribute"><span class="attribute-label">Durability</span> ${player.durability}</div>
+            <div class="attribute"><span class="attribute-label">Max Speed (km/h)</span> ${player.maxSpeed}</div>
+            <div class="attribute"><span class="attribute-label">Football IQ</span> ${player.footballIQ}</div>
+            <div class="attribute"><span class="attribute-label">Best On</span> ${escapeHtml(player.bestOn)}</div>
+          </div>
+          <div style="margin-top: 12px;">
+            <strong>Skills:</strong>
+            <div class="skills-list" aria-label="Skills">${skillTags}</div>
+          </div>
+          <div style="margin-top: 8px;">
+            <strong>Shooting Skill:</strong>
+            <div class="skills-list" aria-label="Shooting skills">${shootingTags}</div>
+          </div>
+
+          <section class="comments-section" aria-label="Comments for player ${escapeHtml(player.name)}">
+            <div class="comments-title" id="comments-title-${player.id}">Comments (${playerComments.length})</div>
+            <div class="comment-list" id="comment-list-${player.id}" tabindex="0" aria-live="polite" aria-relevant="additions">
+              ${playerComments.length === 0 ? '<p style="color:#6b7280; font-style:italic;">No comments yet.</p>' : playerComments.map(c => `
+                <div class="comment-item">${escapeHtml(c)}</div>
+              `).join('')}
+            </div>
+            <form class="comment-form" data-player-id="${player.id}" aria-describedby="comments-title-${player.id}">
+              <label for="comment-input-${player.id}" class="sr-only">Add comment for ${escapeHtml(player.name)}</label>
+              <textarea id="comment-input-${player.id}" aria-label="Comment input for ${escapeHtml(player.name)}" placeholder="Add a comment..." required></textarea>
+              <button type="submit" disabled aria-label="Submit comment for ${escapeHtml(player.name)}">Send</button>
             </form>
           </section>
-          <div style="margin-top: var(--spacing-md); display: flex; justify-content: flex-end; gap: var(--spacing-sm);">
-            ${ownerControls}
-          </div>
-        </div>
-      </article>
-    `;
-  }
+        `;
+        playerListEl.appendChild(playerCard);
 
-  // Render comment
-  function createCommentElement(comment, playerId) {
-    const el = document.createElement('li');
-    el.className = 'comment';
-    el.setAttribute('tabindex','0');
-    el.setAttribute('aria-label', `Comment: ${comment.text}`);
-    el.dataset.commentId = comment.id;
-    el.dataset.playerId = playerId;
-    el.innerHTML = `
-      <div class="comment-text" contenteditable="true" aria-describedby="editHint" role="textbox" aria-multiline="true">${escapeHTML(comment.text)}</div>
-      <div class="comment-actions">
-        <button class="btn-save-comment" title="Save Comment Edit" aria-label="Save edited comment for player">save</button>
-        <button class="btn-delete-comment" title="Delete Comment" aria-label="Delete comment for player">delete</button>
-      </div>
-    `;
-    return el;
-  }
+        // Add event listeners for comment form enable/disable and submit after insertion
+        const form = playerCard.querySelector('form.comment-form');
+        const textarea = form.querySelector('textarea');
+        const submitBtn = form.querySelector('button[type="submit"]');
 
-  // Render all comments for a player on given container ul
-  function renderComments(playerId, containerUL) {
-    const player = players.find(p => p.id === playerId);
-    if (!player) return;
-    containerUL.innerHTML = '';
-    if (!player.comments) player.comments = [];
-    player.comments.forEach(comment => {
-      const commentEl = createCommentElement(comment, playerId);
-      containerUL.appendChild(commentEl);
-    });
-  }
-
-  // Render all players to playersView
-  function renderPlayers() {
-    views.players.innerHTML = players.map(renderPlayer).join('');
-    // After render, render comments for each player
-    document.querySelectorAll('.comment-list').forEach(ul => {
-      const pid = ul.dataset.playerId;
-      renderComments(pid, ul);
-    });
-  }
-
-  // Render blog cards
-  function renderBlogs() {
-    const container = views.blogs;
-    const blogsHTML = blogs.map(blog => `
-      <article class="blog-card" tabindex="0" aria-label="Blog titled ${escapeHTML(blog.title)}">
-        <header class="blog-header">
-          <h3 class="blog-title" contenteditable="true" aria-label="Edit blog title" data-blog-id="${blog.id}" role="textbox">${escapeHTML(blog.title)}</h3>
-          <div>
-            <button class="btn-edit-blog" data-blog-id="${blog.id}" aria-label="Edit blog content">edit</button>
-            <button class="btn-delete-blog" data-blog-id="${blog.id}" aria-label="Delete blog">delete</button>
-          </div>
-        </header>
-        <section class="blog-content" contenteditable="true" role="textbox" aria-label="Edit blog content" data-blog-id="${blog.id}">${escapeHTML(blog.content)}</section>
-      </article>
-    `).join('');
-    container.querySelectorAll('.blog-card').forEach(card => card.remove());
-    // Insert before the add blog button
-    const addBlogBtn = document.getElementById('btnAddBlog');
-    if(addBlogBtn) {
-      container.insertAdjacentHTML('beforeend', blogsHTML);
-    }
-  }
-
-  // Render pictures
-  function renderPictures(){
-    picturesGrid.innerHTML = pictures.map(pic => `
-      <div class="picture-item" tabindex="0" aria-label="Picture uploaded">
-        <img src="${pic.dataUrl}" alt="Uploaded picture" />
-        ${ownerMode ? `<button class="picture-delete" title="Delete Picture" aria-label="Delete picture" data-id="${pic.id}">&times;</button>` : ''}
-      </div>
-    `).join('');
-  }
-
-  // Switch tab/views
-  function switchView(newView) {
-    if (newView === currentView) return;
-
-    // Update buttons aria-selected and active styles
-    Object.entries(tabs).forEach(([key, btn]) => {
-      if (key === newView) {
-        btn.classList.add('active');
-        btn.setAttribute('aria-selected', 'true');
-        views[key].removeAttribute('hidden');
-      } else {
-        btn.classList.remove('active');
-        btn.setAttribute('aria-selected', 'false');
-        views[key].setAttribute('hidden', '');
-      }
-    });
-    // Show/hide add player/blog button in header
-    if (newView === 'players') {
-      addPlayerBtn.style.display = ownerMode ? 'inline-block' : 'none';
-      btnAddBlog.style.display = 'none';
-    } else if (newView === 'blogs') {
-      addPlayerBtn.style.display = 'none';
-      btnAddBlog.style.display = 'inline-block';
-    } else {
-      addPlayerBtn.style.display = 'none';
-      btnAddBlog.style.display = 'none';
-    }
-    currentView = newView;
-    // Focus new tab for accessibility
-    tabs[newView].focus();
-  }
-
-  // Modal open/close functions
-  function openModal(modalEl) {
-    modalEl.classList.add('active');
-    modalEl.style.display = 'flex';
-    modalEl.setAttribute('aria-hidden', 'false');
-    // reset player image input to empty whenever modal opens
-    if(modalEl === modal){
-      playerImageInput.value = '';
-    }
-    // Focus first input
-    const firstInput = modalEl.querySelector('input, select, textarea, button');
-    if(firstInput) firstInput.focus();
-  }
-  function closeModal(modalEl) {
-    modalEl.classList.remove('active');
-    modalEl.style.display = 'none';
-    modalEl.setAttribute('aria-hidden', 'true');
-    if(modalEl === modal){
-      clearPlayerForm();
-    }
-  }
-
-  // Clear player form inputs
-  function clearPlayerForm() {
-    playerForm.reset();
-    editingPlayerId = null;
-    document.getElementById('modalTitle').textContent = 'Add New Player';
-  }
-
-  // Fill player form for editing
-  function fillPlayerForm(player) {
-    document.getElementById('modalTitle').textContent = 'Edit Player';
-    document.getElementById('playerNameInput').value = player.name;
-    document.getElementById('playerGradeInput').value = player.grade;
-    document.getElementById('skill1Input').value = player.skillsMain.join(', ');
-    document.getElementById('skill2Input').value = player.skillsShooting.join(', ');
-    document.getElementById('statAgility').value = player.agility;
-    document.getElementById('statDefence').value = player.defence;
-    document.getElementById('statSanity').value = player.sanity;
-    document.getElementById('statDurability').value = player.durability;
-    document.getElementById('statMaxSpeed').value = player.maxSpeed;
-    document.getElementById('statFootballIQ').value = player.footballIQ;
-    document.getElementById('playerBestOnInput').value = player.bestOn;
-    document.getElementById('playerThreatInput').value = player.threatLevel;
-    editingPlayerId = player.id;
-  }
-
-  // Handle adding/editing player
-  playerForm.addEventListener('submit', async e => {
-    e.preventDefault();
-    if(!ownerMode){
-      alert('Only the owner can edit players.');
-      return;
-    }
-    // Collect form data
-    const name = playerForm.playerNameInput.value.trim();
-    const grade = playerForm.playerGradeInput.value;
-    const skillsMain = playerForm.skill1Input.value.split(',').map(s => s.trim()).filter(Boolean);
-    const skillsShooting = playerForm.skill2Input.value.split(',').map(s => s.trim()).filter(Boolean);
-    const agility = Number(playerForm.statAgility.value);
-    const defence = Number(playerForm.statDefence.value);
-    const sanity = Number(playerForm.statSanity.value);
-    const durability = Number(playerForm.statDurability.value);
-    const maxSpeed = Number(playerForm.statMaxSpeed.value);
-    const footballIQ = Number(playerForm.statFootballIQ.value);
-    const bestOn = playerForm.playerBestOnInput.value.trim();
-    const threatLevel = playerForm.playerThreatInput.value;
-
-    // Basic validation
-    if(!name || !grade || !threatLevel) {
-      alert('Please fill in all required fields.');
-      return;
-    }
-    if(agility < 0 || agility > 100 || defence < 0 || defence > 100 ||
-      sanity < 0 || sanity > 100 || durability < 0 || durability > 100 ||
-      maxSpeed < 0 || maxSpeed > 50 || footballIQ < 0 || footballIQ > 200) {
-      alert('Please enter valid stats within allowed ranges.');
-      return;
-    }
-
-    // Handle image upload if any
-    let imageDataURL = null;
-    const file = playerImageInput.files[0];
-    try {
-      if (file) {
-        imageDataURL = await readFileAsDataURL(file);
-      } else if (editingPlayerId) {
-        // preserve existing image
-        const player = players.find(p=>p.id === editingPlayerId);
-        if (player) imageDataURL = player.imageDataURL || null;
-      }
-    } catch(error) {
-      console.error('Failed to read player image:', error);
-      alert('Failed to read the selected image file. Please try a different image.');
-      return;
-    }
-
-    if (editingPlayerId) {
-      // Edit existing player
-      const playerIndex = players.findIndex(p => p.id === editingPlayerId);
-      if (playerIndex > -1) {
-        players[playerIndex] = {
-          ...players[playerIndex],
-          name, grade, skillsMain, skillsShooting, agility, defence, sanity, durability, maxSpeed, footballIQ, bestOn, threatLevel,
-          imageDataURL: imageDataURL || players[playerIndex].imageDataURL,
-          comments: players[playerIndex].comments || []
-        };
-      }
-    } else {
-      // Add new player
-      const newPlayer = {
-        id: generateId(),
-        name,
-        grade,
-        skillsMain,
-        skillsShooting,
-        agility,
-        defence,
-        sanity,
-        durability,
-        maxSpeed,
-        footballIQ,
-        bestOn,
-        threatLevel,
-        imageDataURL,
-        comments: []
-      };
-      players.push(newPlayer);
-    }
-    saveData();
-    renderPlayers();
-    closeModal(modal);
-  });
-
-  // Utility read file as DataURL
-  function readFileAsDataURL(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = e => resolve(e.target.result);
-      reader.onerror = () => reject('Error reading file');
-      reader.readAsDataURL(file);
-    });
-  }
-
-  // Handle add player button
-  addPlayerBtn.addEventListener('click', () => {
-    if(!ownerMode){
-      alert('Owner login required to add players.');
-      return;
-    }
-    clearPlayerForm();
-    openModal(modal);
-  });
-
-  // Close modal buttons
-  modalCloseBtn.addEventListener('click', () => {
-    closeModal(modal);
-  });
-
-  // Cancel button in player form
-  document.getElementById('btnCancel').addEventListener('click', () => {
-    closeModal(modal);
-  });
-
-  // Tab buttons listeners for switching views
-  Object.entries(tabs).forEach(([key, btn]) => {
-    btn.addEventListener('click', () => {
-      switchView(key);
-    });
-  });
-
-  // Delegate player cards clicks for edit, delete, image change, comment actions
-  views.players.addEventListener('click', async e => {
-    const target = e.target;
-    // Edit player
-    if(target.closest('.btn-edit-player')) {
-      if(!ownerMode){
-        alert('Only the owner can edit players.');
-        return;
-      }
-      const playerId = target.closest('.btn-edit-player').dataset.playerId;
-      const player = players.find(p => p.id === playerId);
-      if(player) {
-        fillPlayerForm(player);
-        openModal(modal);
-      }
-      return;
-    }
-    // Delete player
-    if(target.closest('.btn-delete-player')) {
-      if(!ownerMode){
-        alert('Only the owner can delete players.');
-        return;
-      }
-      const playerId = target.closest('.btn-delete-player').dataset.playerId;
-      confirmDeletion(`Are you sure you want to delete player?`, () => {
-        players = players.filter(p => p.id !== playerId);
-        saveData();
-        renderPlayers();
-      });
-      return;
-    }
-    // Change image button
-    if(target.closest('.player-image-upload')) {
-      if(!ownerMode){
-        alert('Only the owner can change player image.');
-        return;
-      }
-      const playerId = target.closest('.player-image-upload').dataset.playerId;
-      // Open file picker for this player image
-      const fileInput = document.createElement('input');
-      fileInput.type = 'file';
-      fileInput.accept = 'image/*';
-      fileInput.style.display = 'none';
-      fileInput.addEventListener('change', async (ev) => {
-        try {
-          const file = ev.target.files[0];
-          if(file) {
-            const dataUrl = await readFileAsDataURL(file);
-            const player = players.find(p => p.id === playerId);
-            if(player) {
-              player.imageDataURL = dataUrl;
-              saveData();
-              renderPlayers();
-            }
-          }
-        } catch(err) {
-          alert('Failed to upload image. Please try again.');
-          console.error(err);
-        }
-      });
-      document.body.appendChild(fileInput);
-      fileInput.click();
-      fileInput.remove();
-      return;
-    }
-    // Delete comment button or save comment button
-    if(target.closest('.btn-delete-comment')) {
-      const commentLi = target.closest('.comment');
-      const playerId = commentLi.dataset.playerId;
-      const commentId = commentLi.dataset.commentId;
-      // Comments are editable by everyone, so no owner check
-      confirmDeletion('Are you sure you want to delete this comment?', () => {
-        const player = players.find(p => p.id === playerId);
-        if(player) {
-          player.comments = player.comments.filter(c => c.id !== commentId);
-          saveData();
-          renderPlayers();
-        }
-      });
-      return;
-    }
-    if(target.closest('.btn-save-comment')) {
-      const commentLi = target.closest('.comment');
-      const playerId = commentLi.dataset.playerId;
-      const commentId = commentLi.dataset.commentId;
-      const player = players.find(p => p.id === playerId);
-      if(!player) return;
-      const comment = player.comments.find(c => c.id === commentId);
-      if(!comment) return;
-      const commentTextDiv = commentLi.querySelector('.comment-text');
-      if(commentTextDiv) {
-        const newText = commentTextDiv.innerText.trim();
-        if(newText) {
-          comment.text = newText;
-          saveData();
-        } else {
-          alert('Comment cannot be empty.');
-        }
-      }
-      return;
-    }
-  });
-
-  // Delegate submit comment forms
-  views.players.addEventListener('submit', e => {
-    if(e.target.classList.contains('comment-form')) {
-      e.preventDefault();
-      const form = e.target;
-      const playerId = form.dataset.playerId;
-      const player = players.find(p => p.id === playerId);
-      if(!player) return;
-      const textarea = form.querySelector('textarea');
-      if(textarea && textarea.value.trim()) {
-        const newComment = {
-          id: generateId(),
-          text: textarea.value.trim()
-        };
-        player.comments.push(newComment);
-        saveData();
-        renderPlayers();
-      }
-    }
-  });
-
-  // Blogs section event delegation for edit, delete
-  views.blogs.addEventListener('click', e => {
-    const target = e.target;
-    // Delete blog
-    if(target.classList.contains('btn-delete-blog')) {
-      const blogId = target.dataset.blogId;
-      // Blogs are editable by everyone: no owner restriction
-      confirmDeletion('Are you sure you want to delete this blog?', () => {
-        blogs = blogs.filter(b => b.id !== blogId);
-        saveData();
-        renderBlogs();
-      });
-      return;
-    }
-    // Edit blog triggers open modal
-    if(target.classList.contains('btn-edit-blog')) {
-      const blogId = target.dataset.blogId;
-      const blog = blogs.find(b => b.id === blogId);
-      if(!blog) return;
-      openBlogModal(blog);
-      return;
-    }
-  });
-  // Blogs inline title and content editable - save on blur
-  views.blogs.addEventListener('blur', e => {
-    if(e.target.matches('.blog-title') || e.target.matches('.blog-content')) {
-      const blogId = e.target.dataset.blogId;
-      const blog = blogs.find(b => b.id === blogId);
-      if(blog) {
-        const newValue = e.target.innerText.trim();
-        if(e.target.classList.contains('blog-title')) {
-          blog.title = newValue;
-        } else if (e.target.classList.contains('blog-content')) {
-          blog.content = newValue;
-        }
-        saveData();
-      }
-    }
-  }, true);
-
-  // Blog modal open
-  btnAddBlog.addEventListener('click', () => {
-    openBlogModal();
-  });
-
-  blogModalCloseBtn.addEventListener('click', () => {
-    closeModal(blogModal);
-  });
-  document.getElementById('btnBlogCancel').addEventListener('click', () => {
-    closeModal(blogModal);
-  });
-
-  // Blog modal form submit
-  blogForm.addEventListener('submit', e => {
-    e.preventDefault();
-    const title = blogForm.blogTitleInput.value.trim();
-    const content = blogForm.blogContentInput.value.trim();
-    if (!title || !content) {
-      alert('Please enter a title and content for the blog.');
-      return;
-    }
-    if(editingBlogId) {
-      const blogIndex = blogs.findIndex(b => b.id === editingBlogId);
-      if(blogIndex > -1){
-        blogs[blogIndex].title = title;
-        blogs[blogIndex].content = content;
-      }
-    } else {
-      blogs.push({
-        id: generateId(),
-        title,
-        content
-      });
-    }
-    saveData();
-    renderBlogs();
-    closeModal(blogModal);
-  });
-
-  // Open blog modal with optional blog data for editing
-  function openBlogModal(blog=null) {
-    if(blog) {
-      blogForm.blogTitleInput.value = blog.title;
-      blogForm.blogContentInput.value = blog.content;
-      editingBlogId = blog.id;
-      blogModal.querySelector('#blogModalTitle').textContent = 'Edit Blog';
-    } else {
-      blogForm.reset();
-      editingBlogId = null;
-      blogModal.querySelector('#blogModalTitle').textContent = 'Add New Blog';
-    }
-    openModal(blogModal);
-  }
-
-  // Confirm deletion modal logic
-  confirmModalCloseBtn.addEventListener('click', () => {
-    closeModal(confirmModal);
-    deleteContext = null;
-  });
-  confirmCancelBtn.addEventListener('click', () => {
-    closeModal(confirmModal);
-    deleteContext = null;
-  });
-
-  confirmOkBtn.addEventListener('click', () => {
-    if(deleteContext) {
-      deleteContext.action();
-      deleteContext = null;
-      closeModal(confirmModal);
-    }
-  });
-
-  function confirmDeletion(message, action) {
-    confirmMessage.textContent = message;
-    deleteContext = { action };
-    openModal(confirmModal);
-  }
-
-  // Pictures management
-  btnUploadPictures.addEventListener('click', () => {
-    if(!ownerMode){
-      alert('Owner login required to upload pictures.');
-      return;
-    }
-    const files = pictureFileInput.files;
-    if(!files || files.length === 0) {
-      alert('Please select image files to upload.');
-      return;
-    }
-    const validFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
-    if(validFiles.length === 0) {
-      alert('Only image files are allowed.');
-      return;
-    }
-    Promise.all(validFiles.map(f => readFileAsDataURL(f)))
-      .then(imagesData => {
-        imagesData.forEach(dataUrl => {
-          pictures.push({
-            id: generateId(),
-            dataUrl
-          });
+        textarea.addEventListener('input', () => {
+          submitBtn.disabled = !textarea.value.trim();
         });
-        pictureFileInput.value = '';
-        saveData();
-        renderPictures();
+        form.addEventListener('submit', e => {
+          e.preventDefault();
+          const text = textarea.value.trim();
+          if (text) {
+            addComment(player.id, text);
+            textarea.value = '';
+            submitBtn.disabled = true;
+          }
+        });
       });
-  });
-  // Delete picture delegation
-  picturesGrid.addEventListener('click', e => {
-    if(e.target.classList.contains('picture-delete')) {
-      if(!ownerMode){
-        alert('Only owner can delete pictures.');
+    }
+
+    // Add comment for player
+    function addComment(playerId, commentText) {
+      if (!state.comments[playerId]) state.comments[playerId] = [];
+      state.comments[playerId].push(commentText);
+      saveComments();
+      renderPlayers();
+    }
+
+    // Render blogs
+    function renderBlogs() {
+      blogListEl.innerHTML = '';
+      if (!state.blogs.length) {
+        blogListEl.innerHTML = '<p style="font-weight:600; text-align:center; color:#6b7280;">No blogs available</p>';
         return;
       }
-      const id = e.target.dataset.id;
-      confirmDeletion('Are you sure you want to delete this picture?', () => {
-        pictures = pictures.filter(p => p.id !== id);
-        saveData();
-        renderPictures();
+      state.blogs.forEach(blog => {
+        const blogPost = document.createElement('article');
+        blogPost.className = 'blog-post';
+        blogPost.setAttribute('tabindex', '0');
+        blogPost.setAttribute('aria-label', `Blog post titled ${blog.title}`);
+
+        blogPost.innerHTML = `
+          <h2 class="blog-title">${escapeHtml(blog.title)}</h2>
+          <time class="blog-date" datetime="${escapeHtml(blog.date)}">${formatDate(blog.date)}</time>
+          <div class="blog-content">${escapeHtml(blog.content)}</div>
+          ${blog.imageUrl ? `<div class="blog-image-container"><img src="${escapeHtml(blog.imageUrl)}" alt="Blog image for ${escapeHtml(blog.title)}" class="blog-image" loading="lazy" onerror="this.onerror=null;this.src='https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/f8fb03ad-9eb6-4c83-a9da-0466d2b2c474.png';" /></div>` : ''}
+        `;
+        blogListEl.appendChild(blogPost);
       });
     }
-  });
 
-  // Owner login/logout toggle button click
-  ownerToggleBtn.addEventListener('click', () => {
-    if(ownerMode){
-      // Logout flow
-      setOwnerMode(false);
-      alert('Owner mode deactivated.');
+    // Admin panel renders
+
+    // Render admin player list with editable inputs and delete buttons
+    function renderAdminPlayers() {
+      adminPlayerListEl.innerHTML = '';
+      if (!state.players.length) {
+        adminPlayerListEl.innerHTML = '<p style="font-weight:600; text-align:center; color:#6b7280;">No players available</p>';
+        return;
+      }
+      state.players.forEach((player, index) => {
+        const playerId = player.id;
+        // Create container div
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        item.setAttribute('data-player-id', playerId);
+
+        // Build inner editable structure
+        item.innerHTML = `
+          <div>
+            <label for="admin-player-name-${playerId}">Name</label>
+            <input type="text" id="admin-player-name-${playerId}" value="${escapeHtml(player.name)}" />
+          </div>
+          <div>
+            <label for="admin-player-grade-${playerId}">Grade</label>
+            <input type="text" id="admin-player-grade-${playerId}" maxlength="2" style="width: 48px;" value="${escapeHtml(player.grade)}" />
+          </div>
+          <div>
+            <label for="admin-player-picture-${playerId}">Picture URL</label>
+            <input type="text" id="admin-player-picture-${playerId}" value="${escapeHtml(player.pictureUrl || '')}" placeholder="https://example.com/image.png" />
+          </div>
+          <div>
+            <label for="admin-player-threat-${playerId}">Threat Level</label>
+            <select id="admin-player-threat-${playerId}" aria-label="Select threat level">
+              ${THREAT_LEVELS.map(t => `<option value="${t}" ${player.threat === t ? 'selected' : ''}>${t.charAt(0).toUpperCase() + t.slice(1)}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <label for="admin-player-bestOn-${playerId}">Best On</label>
+            <input type="text" id="admin-player-bestOn-${playerId}" value="${escapeHtml(player.bestOn)}" />
+          </div>
+          <div>
+            <label for="admin-player-agility-${playerId}">Agility</label>
+            <input type="number" id="admin-player-agility-${playerId}" min="0" max="100" value="${player.agility}" />
+          </div>
+          <div>
+            <label for="admin-player-defence-${playerId}">Defence</label>
+            <input type="number" id="admin-player-defence-${playerId}" min="0" max="100" value="${player.defence}" />
+          </div>
+          <div>
+            <label for="admin-player-sanity-${playerId}">Sanity</label>
+            <input type="number" id="admin-player-sanity-${playerId}" min="0" max="100" value="${player.sanity}" />
+          </div>
+          <div>
+            <label for="admin-player-durability-${playerId}">Durability</label>
+            <input type="number" id="admin-player-durability-${playerId}" min="0" max="100" step="0.1" value="${player.durability}" />
+          </div>
+          <div>
+            <label for="admin-player-maxSpeed-${playerId}">Max Speed (km/h)</label>
+            <input type="number" id="admin-player-maxSpeed-${playerId}" min="0" max="50" step="0.1" value="${player.maxSpeed}" />
+          </div>
+          <div>
+            <label for="admin-player-footballIQ-${playerId}">Football IQ</label>
+            <input type="number" id="admin-player-footballIQ-${playerId}" min="0" max="250" value="${player.footballIQ}" />
+          </div>
+          <div>
+            <label for="admin-player-skill-${playerId}">Skills (comma separated)</label>
+            <input type="text" id="admin-player-skill-${playerId}" value="${escapeHtml(player.skill.join(', '))}" />
+          </div>
+          <div>
+            <label for="admin-player-shootingSkill-${playerId}">Shooting Skills (comma separated)</label>
+            <input type="text" id="admin-player-shootingSkill-${playerId}" value="${escapeHtml(player.shootingSkill.join(', '))}" />
+          </div>
+        `;
+
+        // Actions container with delete button
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'list-item-actions';
+
+        const saveBtn = document.createElement('button');
+        saveBtn.type = 'button';
+        saveBtn.className = 'btn-primary icon-button';
+        saveBtn.title = `Save changes for ${player.name}`;
+        saveBtn.setAttribute('aria-label', `Save changes for player ${player.name}`);
+        saveBtn.innerHTML = '<span class="material-icons">save</span>';
+
+        saveBtn.addEventListener('click', () => {
+          // Collect data and save
+          const updatedPlayer = {
+            ...player,
+            name: item.querySelector(`#admin-player-name-${playerId}`).value.trim(),
+            grade: item.querySelector(`#admin-player-grade-${playerId}`).value.trim(),
+            pictureUrl: item.querySelector(`#admin-player-picture-${playerId}`).value.trim(),
+            threat: item.querySelector(`#admin-player-threat-${playerId}`).value,
+            bestOn: item.querySelector(`#admin-player-bestOn-${playerId}`).value.trim(),
+            agility: Number(item.querySelector(`#admin-player-agility-${playerId}`).value),
+            defence: Number(item.querySelector(`#admin-player-defence-${playerId}`).value),
+            sanity: Number(item.querySelector(`#admin-player-sanity-${playerId}`).value),
+            durability: parseFloat(item.querySelector(`#admin-player-durability-${playerId}`).value),
+            maxSpeed: Number(item.querySelector(`#admin-player-maxSpeed-${playerId}`).value),
+            footballIQ: Number(item.querySelector(`#admin-player-footballIQ-${playerId}`).value),
+            skill: item.querySelector(`#admin-player-skill-${playerId}`).value.split(',').map(s => s.trim()).filter(Boolean),
+            shootingSkill: item.querySelector(`#admin-player-shootingSkill-${playerId}`).value.split(',').map(s => s.trim()).filter(Boolean),
+          };
+          if (!updatedPlayer.name) {
+            alert('Player name cannot be empty.');
+            return;
+          }
+          // Save update
+          state.players[index] = updatedPlayer;
+          savePlayers();
+          renderPlayers();
+          alert(`Player '${updatedPlayer.name}' saved.`);
+        });
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'btn-danger icon-button';
+        deleteBtn.title = `Delete player ${player.name}`;
+        deleteBtn.setAttribute('aria-label', `Delete player ${player.name}`);
+        deleteBtn.innerHTML = '<span class="material-icons">delete</span>';
+        deleteBtn.addEventListener('click', () => {
+          if (confirm(`Delete player "${player.name}"? This action cannot be undone.`)) {
+            state.players.splice(index, 1);
+            // Also delete comments of player
+            delete state.comments[player.id];
+            savePlayers();
+            saveComments();
+            renderPlayers();
+            renderAdminPlayers();
+            alert(`Player '${player.name}' deleted.`);
+          }
+        });
+
+        actionsDiv.appendChild(saveBtn);
+        actionsDiv.appendChild(deleteBtn);
+
+        item.appendChild(actionsDiv);
+        adminPlayerListEl.appendChild(item);
+      });
+    }
+
+    // Render blogs in admin panel as editable
+    function renderAdminBlogs() {
+      adminBlogListEl.innerHTML = '';
+      if (!state.blogs.length) {
+        adminBlogListEl.innerHTML = '<p style="font-weight:600; text-align:center; color:#6b7280;">No blogs available</p>';
+        return;
+      }
+      state.blogs.forEach((blog, index) => {
+        const blogId = blog.id;
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        item.setAttribute('data-blog-id', blogId);
+        item.style.flexDirection = 'column';
+
+        item.innerHTML = `
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <div style="flex:1 1 40%;">
+              <label for="admin-blog-title-${blogId}">Title</label>
+              <input type="text" id="admin-blog-title-${blogId}" value="${escapeHtml(blog.title)}" />
+            </div>
+            <div style="flex:1 1 30%;">
+              <label for="admin-blog-date-${blogId}">Date</label>
+              <input type="date" id="admin-blog-date-${blogId}" value="${blog.date.slice(0,10)}" />
+            </div>
+            <div style="flex:1 1 25%;">
+              <label for="admin-blog-image-${blogId}">Image URL</label>
+              <input type="text" id="admin-blog-image-${blogId}" value="${escapeHtml(blog.imageUrl || '')}" placeholder="https://example.com/img.png" />
+            </div>
+          </div>
+          <div style="margin-top:12px; flex:1; width:100%;">
+            <label for="admin-blog-content-${blogId}">Content</label>
+            <textarea id="admin-blog-content-${blogId}" style="width:100%;min-height:120px;">${escapeHtml(blog.content)}</textarea>
+          </div>
+        `;
+
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'list-item-actions';
+        actionsDiv.style.marginTop = '12px';
+
+        const saveBtn = document.createElement('button');
+        saveBtn.type = 'button';
+        saveBtn.className = 'btn-primary icon-button';
+        saveBtn.title = `Save changes for blog '${blog.title}'`;
+        saveBtn.setAttribute('aria-label', `Save changes for blog ${blog.title}`);
+        saveBtn.innerHTML = '<span class="material-icons">save</span>';
+        saveBtn.addEventListener('click', () => {
+          const updatedBlog = {
+            ...blog,
+            title: item.querySelector(`#admin-blog-title-${blogId}`).value.trim(),
+            date: item.querySelector(`#admin-blog-date-${blogId}`).value,
+            imageUrl: item.querySelector(`#admin-blog-image-${blogId}`).value.trim(),
+            content: item.querySelector(`#admin-blog-content-${blogId}`).value.trim(),
+          };
+          if (!updatedBlog.title) {
+            alert('Blog title cannot be empty.');
+            return;
+          }
+          if (!updatedBlog.date) {
+            alert('Blog date is required.');
+            return;
+          }
+          state.blogs[index] = updatedBlog;
+          saveBlogs();
+          renderBlogs();
+          alert(`Blog '${updatedBlog.title}' saved.`);
+        });
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'btn-danger icon-button';
+        deleteBtn.title = `Delete blog '${blog.title}'`;
+        deleteBtn.setAttribute('aria-label', `Delete blog ${blog.title}`);
+        deleteBtn.innerHTML = '<span class="material-icons">delete</span>';
+        deleteBtn.addEventListener('click', () => {
+          if (confirm(`Delete blog "${blog.title}"? This action cannot be undone.`)) {
+            state.blogs.splice(index, 1);
+            saveBlogs();
+            renderBlogs();
+            renderAdminBlogs();
+            alert(`Blog '${blog.title}' deleted.`);
+          }
+        });
+
+        actionsDiv.appendChild(saveBtn);
+        actionsDiv.appendChild(deleteBtn);
+
+        item.appendChild(actionsDiv);
+        adminBlogListEl.appendChild(item);
+      });
+    }
+
+    // Render uploaded pictures in admin panel with delete capability
+    function renderAdminPictures() {
+      adminPicturesListEl.innerHTML = '';
+      if (!state.pictures.length) {
+        adminPicturesListEl.innerHTML = '<p style="font-weight:600; text-align:center; color:#6b7280;">No pictures uploaded</p>';
+        return;
+      }
+      state.pictures.forEach((pic, index) => {
+        const picId = pic.id;
+        const picDiv = document.createElement('div');
+        picDiv.style.display = 'flex';
+        picDiv.style.alignItems = 'center';
+        picDiv.style.justifyContent = 'space-between';
+        picDiv.style.marginBottom = '10px';
+
+        const imgThumb = document.createElement('img');
+        imgThumb.src = pic.url;
+        imgThumb.alt = `Uploaded picture preview`;
+        imgThumb.style.width = '64px';
+        imgThumb.style.height = '64px';
+        imgThumb.style.borderRadius = '12px';
+        imgThumb.style.objectFit = 'cover';
+        imgThumb.style.border = '1px solid #d1d5db';
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'btn-danger';
+        removeBtn.style.flexShrink = '0';
+        removeBtn.textContent = 'Delete';
+        removeBtn.title = 'Delete this picture';
+        removeBtn.addEventListener('click', () => {
+          if (confirm('Delete this picture? This cannot be undone.')){
+            state.pictures.splice(index, 1);
+            savePictures();
+            renderAdminPictures();
+            alert('Picture deleted.');
+          }
+        });
+
+        picDiv.appendChild(imgThumb);
+        picDiv.appendChild(removeBtn);
+        adminPicturesListEl.appendChild(picDiv);
+      });
+    }
+
+    // Add new player form dialog (simple modal or inline form)
+    function addNewPlayer() {
+      const newId = genId('p');
+      const newPlayer = {
+        id: newId,
+        name: 'New Player',
+        grade: 'C',
+        skill: [],
+        shootingSkill: [],
+        agility: 50,
+        defence: 50,
+        sanity: 50,
+        threat: 'wolf',
+        durability: 50,
+        maxSpeed: 20,
+        footballIQ: 80,
+        bestOn: 'field',
+        pictureUrl: '',
+      };
+      state.players.push(newPlayer);
+      savePlayers();
       renderPlayers();
-      renderPictures();
-    } else {
-      // Login flow
-      const pw = prompt('Please enter owner password:');
-      if(pw === OWNER_PASSWORD){
-        setOwnerMode(true);
-        alert('Owner mode activated. You can now edit players and pictures.');
-        renderPlayers();
-        renderPictures();
+      renderAdminPlayers();
+      alert('New player added. Edit their details below.');
+    }
+
+    // Add new blog function
+    function addNewBlog() {
+      const newId = genId('b');
+      const newBlog = {
+        id: newId,
+        title: 'New blog post',
+        date: new Date().toISOString().slice(0,10),
+        content: '',
+        imageUrl: '',
+      };
+      state.blogs.push(newBlog);
+      saveBlogs();
+      renderBlogs();
+      renderAdminBlogs();
+      alert('New blog post added. Edit its details below.');
+    }
+
+    // Admin login handler
+    function handleAdminLogin(e) {
+      e.preventDefault();
+      const enteredPass = adminPasswordInput.value.trim();
+      const storedPass = localStorage.getItem(STORAGE_KEYS.admin_pass) || DEFAULT_ADMIN_PASSWORD;
+      if(enteredPass === storedPass){
+        setAdminLoggedIn(true);
+        alert('Admin login successful.');
+        adminPasswordInput.value = '';
+        showAdminPanel(true);
       } else {
-        alert('Incorrect password. Access denied.');
+        alert('Incorrect admin password. Try again.');
       }
     }
-  });
 
-  // Initialize
-  function init() {
-    loadData();
-    renderPlayers();
-    renderBlogs();
-    renderPictures();
-    updateOwnerModeUI();
-    switchView('players');
-  }
+    // Admin logout
+    function adminLogout() {
+      if(!confirm('Logout admin?')) return;
+      setAdminLoggedIn(false);
+      showAdminPanel(false);
+      alert('Admin logged out.');
+    }
 
-  // Accessibility: Keyboard trap within modals
-  function trapFocus(modalEl) {
-    const focusableElementsString = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]';
-    const focusableElements = modalEl.querySelectorAll(focusableElementsString);
-    const firstTabStop = focusableElements[0];
-    const lastTabStop = focusableElements[focusableElements.length - 1];
-    modalEl.addEventListener('keydown', (e) => {
-      if (e.key === 'Tab') {
-        if (e.shiftKey) {
-          if (document.activeElement === firstTabStop) {
-            e.preventDefault();
-            lastTabStop.focus();
-          }
+    // Toggle showing admin panel or login form
+    function showAdminPanel(show) {
+      if(show){
+        adminPanelContentEl.style.display = 'block';
+        adminLoginContainerEl.style.display = 'none';
+      } else {
+        adminPanelContentEl.style.display = 'none';
+        adminLoginContainerEl.style.display = 'block';
+      }
+    }
+
+    // Upload picture handler for admin
+    async function handlePictureUpload(e) {
+      e.preventDefault();
+      const file = pictureUploadInput.files[0];
+      if(!file){
+        alert('Please select a file to upload.');
+        return;
+      }
+      if(!file.type.startsWith('image/')){
+        alert('Only image files (jpg, png) are allowed.');
+        return;
+      }
+      if(file.size > 2 * 1024 * 1024){
+        alert('Maximum file size allowed is 2MB.');
+        return;
+      }
+
+      // Read file as Data URL and save to pictures list
+      const reader = new FileReader();
+      reader.onload = function(evt){
+        const url = evt.target.result;
+        const id = genId('pic');
+        state.pictures.push({id, url});
+        savePictures();
+        renderAdminPictures();
+        alert('Picture uploaded successfully.');
+        pictureUploadInput.value = '';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Navigation tab buttons (Players, Blogs, Admin)
+    const tabs = [
+      {btn: document.getElementById('btn-players'), section: document.getElementById('players-section')},
+      {btn: document.getElementById('btn-blogs'), section: document.getElementById('blogs-section')},
+      {btn: document.getElementById('btn-admin'), section: document.getElementById('admin-section')},
+    ];
+    function switchTab(selectedBtn) {
+      tabs.forEach(({btn, section}) => {
+        const isSelected = btn === selectedBtn;
+        btn.setAttribute('aria-pressed', isSelected.toString());
+        if (isSelected){
+          section.removeAttribute('hidden');
+          section.focus();
         } else {
-          if (document.activeElement === lastTabStop) {
-            e.preventDefault();
-            firstTabStop.focus();
-          }
+          section.setAttribute('hidden', 'true');
+        }
+      });
+      if (selectedBtn === tabs[2].btn){
+        // Admin tab clicked, show correct admin panel view depending on login state
+        showAdminPanel(state.adminLoggedIn);
+      }
+      location.hash = selectedBtn.id.replace(/^btn-/, '');
+    }
+
+    // Initialize tab from URL hash or default to players
+    function initTabFromHash() {
+      const hash = location.hash.replace('#','');
+      const tabBtn = tabs.find(t => t.btn.id.endsWith(hash));
+      if(tabBtn){
+        switchTab(tabBtn.btn);
+      } else {
+        switchTab(tabs[0].btn);
+      }
+    }
+
+    // Initialization
+    function init() {
+      loadData();
+      renderPlayers();
+      renderBlogs();
+      renderAdminPlayers();
+      renderAdminBlogs();
+      renderAdminPictures();
+
+      // Setup tab nav events
+      tabs.forEach(({btn}) => {
+        btn.addEventListener('click', () => switchTab(btn));
+      });
+      initTabFromHash();
+
+      // Admin login form submit
+      adminLoginForm.addEventListener('submit', handleAdminLogin);
+
+      // Admin logout button
+      document.getElementById('btn-logout').addEventListener('click', adminLogout);
+
+      // Add new player
+      document.getElementById('btn-add-player').addEventListener('click', addNewPlayer);
+
+      // Add new blog
+      document.getElementById('btn-add-blog').addEventListener('click', addNewBlog);
+
+      // Picture upload
+      pictureUploadForm.addEventListener('submit', handlePictureUpload);
+
+      // Comment form submit delegation for dynamically rendered comments for players
+      playerListEl.addEventListener('submit', e => {
+        if (!e.target.classList.contains('comment-form')) return;
+        e.preventDefault();
+        const form = e.target;
+        const playerId = form.getAttribute('data-player-id');
+        const textarea = form.querySelector('textarea');
+        const text = textarea.value.trim();
+        if (text && playerId) {
+          addComment(playerId, text);
+          textarea.value = '';
+          form.querySelector('button[type="submit"]').disabled = true;
+        }
+      });
+
+      // Enable submit button when typing in any comment form (delegated)
+      playerListEl.addEventListener('input', e => {
+        if (!(e.target.tagName === 'TEXTAREA' && e.target.closest('form.comment-form'))) return;
+        const form = e.target.closest('form.comment-form');
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = !e.target.value.trim();
+      });
+
+      // Keyboard accessibility adjustment: focus outline visible only on keyboard interaction
+      function handleFirstTab(e) {
+        if(e.key === 'Tab') {
+          document.body.classList.add('user-is-tabbing');
+          window.removeEventListener('keydown', handleFirstTab);
         }
       }
-      if(e.key === 'Escape') {
-        if(modalEl === modal) closeModal(modal);
-        if(modalEl === blogModal) closeModal(blogModal);
-        if(modalEl === confirmModal) closeModal(confirmModal);
-      }
-    });
-  }
-  trapFocus(modal);
-  trapFocus(blogModal);
-  trapFocus(confirmModal);
+      window.addEventListener('keydown', handleFirstTab);
+      // Remove outline on mouse click to prevent
+      window.addEventListener('mousedown', () => {
+        document.body.classList.remove('user-is-tabbing');
+      })
+    }
 
-  // Setup initial event listeners for keyboard enter on nav buttons
-  Object.values(tabs).forEach(button => {
-    button.addEventListener('keydown', e => {
-      if(e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        button.click();
-      }
-    });
-  });
+    // Run init on DOM ready
+    document.addEventListener('DOMContentLoaded', init);
 
-  init();
+  })();
 </script>
-
 </body>
 </html>
+
 
